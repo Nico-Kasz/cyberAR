@@ -29,8 +29,8 @@ namespace VRKeyboard.Utils
         private Text currText;
         private string Input 
         {
-            get { return "inputText.text"; }
-            set { usr_text.text = value; }
+            get { return currText.text; }
+            set { currText.text = value; }
         }
         private Key[] keyList;
         private bool capslockFlag;
@@ -40,6 +40,7 @@ namespace VRKeyboard.Utils
         void Awake()
         {
             keyList = keys.GetComponentsInChildren<Key>();
+            currText = usr_text;
         }
 
         void Start()
@@ -100,9 +101,9 @@ namespace VRKeyboard.Utils
             Input += s;
         }
 
-        public void setText(int val) 
+        public void setText() 
         {
-
+            currText = pas_text;
         }
         #endregion
     }
