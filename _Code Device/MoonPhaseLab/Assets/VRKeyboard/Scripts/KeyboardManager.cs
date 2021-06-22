@@ -21,6 +21,7 @@ namespace VRKeyboard.Utils
         public Text std_text_box;
         public GameObject usr;
         public GameObject pas;
+        public GameObject loading;
 
         [Header("Essentials")]
         public Transform keys;
@@ -118,9 +119,9 @@ namespace VRKeyboard.Utils
             {
                 pas.SetActive(false);
             } 
-            else
+            else if (! (pas.active || usr.active))
             {
-                usr.SetActive(true);
+                loading.SetActive(true);
             }
         }
         #endregion
