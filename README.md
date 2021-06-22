@@ -1,2 +1,0 @@
-# cyberAR
-MTSU CyberAR
