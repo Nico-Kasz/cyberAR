@@ -18,8 +18,9 @@ namespace VRKeyboard.Utils
         public int maxInputLength;
 
         [Header("Text Boxes")]
-        public Text usr_text;
-        public Text pas_text; 
+        public Text std_text_box;
+        public GameObject usr;
+        public GameObject pas;
 
         [Header("Essentials")]
         public Transform keys;
@@ -30,7 +31,7 @@ namespace VRKeyboard.Utils
         private string Input 
         {
             get { return currText.text; }
-            set { currText.text = value; }
+            set { currText.text = value; } 
         }
         private Key[] keyList;
         private bool capslockFlag;
@@ -40,7 +41,7 @@ namespace VRKeyboard.Utils
         void Awake()
         {
             keyList = keys.GetComponentsInChildren<Key>();
-            currText = usr_text;
+            currText = std_text_box;
         }
 
         void Start()
@@ -101,9 +102,26 @@ namespace VRKeyboard.Utils
             Input += s;
         }
 
-        public void setText() 
+        public void setText(Text txtbox) 
         {
-            currText = pas_text;
+            currText = txtbox;
+        }
+
+        public void next()
+        {
+            if(usr.active)
+            {
+                usr.SetActive(false);
+                pas.SetActive(true);
+            } 
+            else if (pas.active)
+            {
+                pas.SetActive(false);
+            } 
+            else
+            {
+                usr.SetActive(true);
+            }
         }
         #endregion
     }
