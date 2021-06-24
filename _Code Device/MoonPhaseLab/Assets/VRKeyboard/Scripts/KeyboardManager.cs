@@ -19,9 +19,6 @@ namespace VRKeyboard.Utils
 
         [Header("Text Boxes")]
         public Text std_text_box;
-        public GameObject usr;
-        public GameObject pas;
-        public GameObject loading;
 
         [Header("Essentials")]
         public Transform keys;
@@ -106,21 +103,6 @@ namespace VRKeyboard.Utils
         public void setText(Text txtbox) 
         {
             currText = txtbox;
-        }
-
-        public void next()
-        {
-            if(usr.active)
-            {
-                usr.SetActive(false);
-                pas.SetActive(true);
-            } 
-            else if (pas.active)
-            {
-                pas.SetActive(false);
-                loading.SetActive(true);
-            } 
-            
         }
         #endregion
     }
