@@ -235,51 +235,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &130930767
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 130930769}
-  - component: {fileID: 130930768}
-  m_Layer: 0
-  m_Name: '[Logic]'
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &130930768
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 130930767}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 749f8d4892851e74fb2ff925fcd7169e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  usr_text: {fileID: 1352368012}
-  pas_text: {fileID: 389962053}
---- !u!4 &130930769
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 130930767}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &294483388
 GameObject:
   m_ObjectHideFlags: 0
@@ -463,7 +418,7 @@ PrefabInstance:
         type: 3}
       propertyPath: OnBumperDown.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 130930767}
+      objectReference: {fileID: 1352368013}
     - target: {fileID: 7235541112672725364, guid: 222bd9546a0294a4186782eaa063a280,
         type: 3}
       propertyPath: OnHomeButtonTap.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -512,7 +467,7 @@ PrefabInstance:
     - target: {fileID: 7235541112672725364, guid: 222bd9546a0294a4186782eaa063a280,
         type: 3}
       propertyPath: OnBumperDown.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: 
+      value: Clear
       objectReference: {fileID: 0}
     - target: {fileID: 7235541112672725364, guid: 222bd9546a0294a4186782eaa063a280,
         type: 3}
@@ -557,7 +512,7 @@ PrefabInstance:
     - target: {fileID: 7235541112672725364, guid: 222bd9546a0294a4186782eaa063a280,
         type: 3}
       propertyPath: OnBumperDown.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: 
+      value: UnityEngine.CanvasRenderer, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 7235541112672725364, guid: 222bd9546a0294a4186782eaa063a280,
         type: 3}
@@ -592,7 +547,7 @@ PrefabInstance:
     - target: {fileID: 7235541112672725364, guid: 222bd9546a0294a4186782eaa063a280,
         type: 3}
       propertyPath: OnBumperDown.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: 
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 7235541112672725364, guid: 222bd9546a0294a4186782eaa063a280,
         type: 3}
@@ -1482,7 +1437,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1727,7 +1682,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3476,7 +3431,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
