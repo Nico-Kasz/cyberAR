@@ -118,11 +118,9 @@ namespace VRKeyboard.Utils
             else if (pas.active)
             {
                 pas.SetActive(false);
-            } 
-            else if (! (pas.active || usr.active))
-            {
                 loading.SetActive(true);
-            }
+            } 
+            
         }
         #endregion
     }
