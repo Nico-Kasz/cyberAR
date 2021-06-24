@@ -1489,6 +1489,7 @@ GameObject:
   - component: {fileID: 590541484}
   - component: {fileID: 590541483}
   - component: {fileID: 590541482}
+  - component: {fileID: 590541486}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -1566,12 +1567,31 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 590541481}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 0.5, z: 2}
+  m_LocalPosition: {x: 0, y: 0, z: 4}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &590541486
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 590541481}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 68b50cb586b26d9478dc511df103892b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &597716403
 GameObject:
   m_ObjectHideFlags: 0
@@ -1690,9 +1710,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28d701e6a5c0e604896fe87be0acdca6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LoginUI: {fileID: 2090734661}
   usr: {fileID: 382831087}
   pas: {fileID: 581790278}
   loading: {fileID: 308462849}
+  intro: {fileID: 590541481}
 --- !u!1 &787443925
 GameObject:
   m_ObjectHideFlags: 0
@@ -4371,7 +4393,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!223 &2090734662
 Canvas:
   m_ObjectHideFlags: 0
