@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class loginLogic : MonoBehaviour
 {
@@ -9,7 +10,8 @@ public class loginLogic : MonoBehaviour
     public GameObject usr;
     public GameObject pas;
     public GameObject loading;
-    public GameObject intro; 
+    public GameObject intro;
+    public GameObject keyboard; 
     #endregion
 
     #region Private Variables 
@@ -41,14 +43,18 @@ public class loginLogic : MonoBehaviour
         {
             usr.SetActive(false);
             pas.SetActive(true);
-        }
+            keyboard.GetComponent<VRKeyboard.Utils.KeyboardManager>().setText(pas.gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).GetComponent<Text>());
+        } 
         else if (pas.active)
         {
             pas.SetActive(false);
+            keyboard.SetActive(false);
             loading.SetActive(true);
+            // Send Request to server w/ encrypted user/pass 
         }
         else
         {
+            // If loop back this far TODO: readd placeholders and clear text
             usr.SetActive(true);
             pas.SetActive(false);
             loading.SetActive(false);

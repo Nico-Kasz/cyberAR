@@ -354,6 +354,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 7756163131501644642}
+        m_TargetAssemblyTypeName: VRKeyboard.Utils.KeyboardManager, Assembly-CSharp
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &294483391
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1715,6 +1727,7 @@ MonoBehaviour:
   pas: {fileID: 581790278}
   loading: {fileID: 308462849}
   intro: {fileID: 590541481}
+  keyboard: {fileID: 7756163131501644642}
 --- !u!1 &787443925
 GameObject:
   m_ObjectHideFlags: 0
@@ -3008,7 +3021,7 @@ PrefabInstance:
     - target: {fileID: 114407932578683560, guid: 6332cefa0c3c02049842fbed64b35e5b,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114407932578683560, guid: 6332cefa0c3c02049842fbed64b35e5b,
         type: 3}

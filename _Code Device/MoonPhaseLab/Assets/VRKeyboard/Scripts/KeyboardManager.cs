@@ -26,6 +26,7 @@ namespace VRKeyboard.Utils
 
         #region Private Variables
         private Text currText;
+        private GameObject currPlaceholder;
         private string Input 
         {
             get { return currText.text; }
@@ -96,6 +97,8 @@ namespace VRKeyboard.Utils
 
         public void GenerateInput(string s)
         {
+            if (currPlaceholder.active)
+                currPlaceholder.SetActive(false);
             if (Input.Length > maxInputLength) { return; }
             Input += s;
         }
@@ -103,6 +106,7 @@ namespace VRKeyboard.Utils
         public void setText(Text txtbox) 
         {
             currText = txtbox;
+            currPlaceholder = currText.gameObject.transform.parent.gameObject.transform.GetChild(1).gameObject;
         }
         #endregion
     }
