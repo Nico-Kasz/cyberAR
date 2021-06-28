@@ -11,12 +11,13 @@ public class loginLogic : MonoBehaviour
     public GameObject pas;
     public GameObject loading;
     public GameObject intro;
-    public GameObject keyboard; 
+    public GameObject keyboard;
+    public GameObject placement_prop;
     #endregion
 
     #region Private Variables 
     private bool UIStarted = false;
-    private bool repeatUser = false; // This is for testing, this is replaced by authenticating user/pass server-side to determine whether or not to repeat
+    private bool repeatUser = true; // This is for testing, this is replaced by authenticating user/pass server-side to determine whether or not to repeat
     #endregion
 
     #region MonoBehaviour
@@ -24,7 +25,6 @@ public class loginLogic : MonoBehaviour
     void Start()
     {
         intro.SetActive(true);
-        repeatUser = false;
     }
 
     // Update is called once per frame
@@ -57,29 +57,41 @@ public class loginLogic : MonoBehaviour
             // Send Request to server w/ encrypted user/pass 
             // Psudo: 
             // repeatUser = authenticate.valid(usr,pass);
+
+            wait(5); // simulate authentication - TODO (doesn't work)
             if (!repeatUser)
             {
                 LoginUI.SetActive(false);
-                // Show mesh 
+                #if PLATFORM_LUMIN
+                //GameObject.find("[AR_CONTENT]").GetComponent<ControlInput>().GetChild(0).SetActive(false);
+                #endif
 
+                // Show mesh 
+                placement_prop.SetActive(true);
             }
-            else { next(); }
+            // else { next(); }
         }
         else
-        { 
+        {
             // If loop back this far TODO: readd placeholders and clear text
+            LoginUI.SetActive(true);
             usr.SetActive(true);
             pas.SetActive(false);
             loading.SetActive(false);
         }
     }
-    #endregion
+#endregion
 
-    #region Private Events
+#region Private Events
     private void StartLoginUI()
     {
         UIStarted = true;
         LoginUI.SetActive(true);
     }
-    #endregion
+
+    private IEnumerator wait(int time)
+    {
+        yield return new WaitForSeconds(time);
+    }
+#endregion
 }
