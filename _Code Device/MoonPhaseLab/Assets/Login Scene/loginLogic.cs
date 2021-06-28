@@ -16,44 +16,57 @@ public class loginLogic : MonoBehaviour
 
     #region Private Variables 
     private bool UIStarted = false;
+    private bool repeatUser = false; // This is for testing, this is replaced by authenticating user/pass server-side to determine whether or not to repeat
     #endregion
 
     #region MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        intro.SetActive(true);
+        repeatUser = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!UIStarted && intro.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+        if (!UIStarted && intro.gameObject.transform.GetChild(0).gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle"))
         {
-            intro.SetActive(false);
+            intro.gameObject.transform.GetChild(0).gameObject.SetActive(false);
             StartLoginUI();
         }
     }
     #endregion
 
     #region Public Events
+    // Keep the flow of events involving the Login UI
     public void next()
     {
         if (usr.active)
         {
             usr.SetActive(false);
             pas.SetActive(true);
+            // Sets the keyboard text box to the Password Text box
             keyboard.GetComponent<VRKeyboard.Utils.KeyboardManager>().setText(pas.gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).GetComponent<Text>());
-        } 
+        }
         else if (pas.active)
         {
             pas.SetActive(false);
             keyboard.SetActive(false);
             loading.SetActive(true);
             // Send Request to server w/ encrypted user/pass 
+            // Psudo: 
+            // repeatUser = authenticate.valid(usr,pass);
+            if (!repeatUser)
+            {
+                LoginUI.SetActive(false);
+                // Show mesh 
+
+            }
+            else { next(); }
         }
         else
-        {
+        { 
             // If loop back this far TODO: readd placeholders and clear text
             usr.SetActive(true);
             pas.SetActive(false);
