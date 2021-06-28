@@ -15,14 +15,14 @@ public class loginLogic : MonoBehaviour
     #endregion
 
     #region Private Variables 
-    private bool UIStarted;
+    private bool UIStarted = false;
     #endregion
 
     #region MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        UIStarted = false;
+
     }
 
     // Update is called once per frame
