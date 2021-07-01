@@ -58,7 +58,7 @@ public class loginLogic : MonoBehaviour
             // Psudo: 
             // repeatUser = authenticate.valid(usr,pass);
 
-            wait(5); // simulate authentication - TODO (doesn't work)
+            // wait(5); // simulate authentication - TODO (doesn't work)
             if (!repeatUser)
             {
                 LoginUI.SetActive(false);
@@ -87,11 +87,6 @@ public class loginLogic : MonoBehaviour
     {
         UIStarted = true;
         LoginUI.SetActive(true);
-    }
-
-    private IEnumerator wait(int time)
-    {
-        yield return new WaitForSeconds(time);
     }
 #endregion
 }
