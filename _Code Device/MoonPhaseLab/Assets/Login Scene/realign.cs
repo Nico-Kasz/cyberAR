@@ -37,6 +37,9 @@ namespace MagicLeapTools
         {
             transform.position = controller.transform.position; // + new Vector3(0, .5f, 0); 
             transform.eulerAngles = new Vector3(0, mainCamera.transform.eulerAngles.y, 0);
+
+            // change orientation of starfield
+            GameObject.Find("Starfield").transform.eulerAngles = new Vector3(0, mainCamera.transform.eulerAngles.y, 0);
         }
         #endregion
     }

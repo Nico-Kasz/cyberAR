@@ -29,7 +29,8 @@ public class loginLogic : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
+    { 
+        // After initial animation, this will initiate login screen 
         if (!UIStarted && intro.gameObject.transform.GetChild(0).gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle"))
         {
             intro.gameObject.transform.GetChild(0).gameObject.SetActive(false);
@@ -69,7 +70,7 @@ public class loginLogic : MonoBehaviour
                 // Show mesh 
                 placement_prop.SetActive(true);
             }
-            // else { next(); }
+            // else { next(); } // disable this line to remain on the loading screen during tests 
         }
         else
         {
@@ -87,6 +88,7 @@ public class loginLogic : MonoBehaviour
     {
         UIStarted = true;
         LoginUI.SetActive(true);
+        keyboard.SetActive(true); // for ease of usage - after dropbox was added 
     }
 #endregion
 }

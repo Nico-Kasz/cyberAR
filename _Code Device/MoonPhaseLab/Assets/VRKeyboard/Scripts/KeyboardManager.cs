@@ -16,6 +16,7 @@ namespace VRKeyboard.Utils
         [Tooltip("If the character is uppercase at the initialization")]
         public bool isUppercase = false;
         public int maxInputLength;
+        public GameObject dropbox;
 
         [Header("Text Boxes")]
         public Text std_text_box;
@@ -40,7 +41,7 @@ namespace VRKeyboard.Utils
         void Awake()
         {
             keyList = keys.GetComponentsInChildren<Key>();
-            currText = std_text_box;
+            setText(std_text_box);
         }
 
         void Start()
@@ -97,12 +98,16 @@ namespace VRKeyboard.Utils
 
         public void GenerateInput(string s)
         {
-            if (currPlaceholder.active)
-                currPlaceholder.SetActive(false);
+            // Disable current placeholder text
+            currPlaceholder.SetActive(false);
+
+            // Add letters to current string
             if (Input.Length > maxInputLength) { return; }
             Input += s;
+            
         }
 
+        // Set which text the keyboard is writing to. Also sets the placeholder. 
         public void setText(Text txtbox) 
         {
             currText = txtbox;
