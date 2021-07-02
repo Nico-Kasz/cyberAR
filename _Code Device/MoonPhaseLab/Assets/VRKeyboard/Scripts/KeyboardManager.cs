@@ -41,7 +41,7 @@ namespace VRKeyboard.Utils
         void Awake()
         {
             keyList = keys.GetComponentsInChildren<Key>();
-            setText(std_text_box);
+            resetText();
         }
 
         void Start()
@@ -112,6 +112,12 @@ namespace VRKeyboard.Utils
         {
             currText = txtbox;
             currPlaceholder = currText.gameObject.transform.parent.gameObject.transform.GetChild(1).gameObject;
+        }
+
+        // Reset Textbox to the User entry 
+        public void resetText()
+        {
+            setText(std_text_box);
         }
         #endregion
     }
