@@ -2,28 +2,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System;
 
 public class autofill : MonoBehaviour
 {
-    public bool testingVersion;
+    #region Public Variables 
+    [Tooltip("This is how many characters are typed until a new list of names is requested.")]
+    public int len = 3;
+    public int optionLimit = 5;
+    #endregion 
 
     #region Private Variables
     private List<string> names = new List<string>();
-    private string text;
+    private Text input;
+    private string currText;
     private Dropdown dropdown;
+    private bool onlyOne; 
     #endregion
 
 
     // Start is called before the first frame update
     void Start()
     {
-        text = transform.GetChild(0).GetComponent<Text>().text;
-        string[] nameslist = new string[] { "jim", "sam", "chad", "cronie", "crestin", "crestolemu", "crester", "crestunker"};
-        foreach (string name in nameslist) { names.Add(name); }
+        input = transform.GetChild(0).GetComponent<Text>();
+        currText = input.text;
+        string[] nameslist = new string[] { "jim", "sam", "chad", "cronie", "crestin", "crestin2", "crestion", "crestolemu", "crester", "crestunker"}; // TESTING
+        foreach (string name in nameslist) { names.Add(name); }                                                                                        // TESTING
+        // pullCSV(names, path);
         dropdown = GetComponent<Dropdown>();
-
-        queryAndUpdate();
+        sort(names);
         printNames();
 
     }
@@ -31,24 +39,24 @@ public class autofill : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!text.Equals(transform.GetChild(0).GetComponent<Text>().text))
-        {
-            text = transform.GetChild(0).GetComponent<Text>().text;
-            print("Username updated to: " + text);
+        // Only way to consistantly make it visible 
+        if (input.text.Length >= len && !onlyOne) { dropdown.Show(); }
 
-            if (testingVersion)
-            {
-                sort(names);
-                setOptions(names);
-            }
-            else
-            {
-                queryAndUpdate();  // for real version
-            }
+        // On change of text 
+        if (!currText.Equals(input.text))
+        {
+            currText = input.text;
+            print("Username updated to: " + currText);
+
+            queryAndUpdate();
+            makeShow();
         }
     }
 
     #region Public Methods 
+    // Unsure if this works 
+    public void OnSubmit(BaseEventData eventData) { GameObject.Find("[LOGIC]").transform.GetComponent<loginLogic>().next(); }
+
     public void printNames()
     {
         foreach (string str in names) { print(str); }
@@ -57,41 +65,50 @@ public class autofill : MonoBehaviour
     // TODO: FIX THIS 
     public void queryAndUpdate()
     {
-        List<string> strings = new List<string>();
-        if (text.Length >= 3)
+        dropdown.Hide();
+        // send Qury and retrieve new names list
+        // foreach (string name in csv) { if (name.contains(name) ) List.Add(name);}
+        // names = new names :)
+        if (input.text.Length >= len)
         {
-            dropdown.Show();
-            // send Qury and retrieve new names list
-            // foreach (string name in csv) { if (name.contains(name) ) List.Add(name);}
-            // names = new names :)
-            foreach (string name in names) { if (name.Contains(text)) { strings.Add(name); } }
+            dropdown.options.Clear();
+            int count = 0;
+            foreach (string name in names)
+            {
+                if (name.Contains(input.text) && count < optionLimit)
+                {
+                    dropdown.options.Add(new Dropdown.OptionData(name));
+                    count++;
+                }
+            }
+            onlyOne = count > 1 ? false : true;         // Not sure this is operational
         }
-        else
-        {
-            dropdown.Hide();
-        }
-        // Update
-        sort(strings);
-        setOptions(strings);
-        dropdown.RefreshShownValue();
+
     }
     #endregion
 
     #region Private Methods 
+    private void pullCSV(List<string> names, string path)
+    {
+        /*
+        string[] lines = System.IO.File.ReadAllLines(path);
+        foreach (string line in lines)
+        {
+            string[] columns = line.Split(',');
+            names.Add(columns[2]);
+        }
+        */
+    }
+
     private void sort(List<string> names)
     {
-        names.Sort();  // used for List<string> implementation 
+        names.Sort();                                               // used for List<string> implementation 
         // Array.Sort(names, (s1, s2) => String.Compare(s1, s2));   // used for string[] implementation
     }
 
-    private void setOptions(List<string> names)
+    private void makeShow()
     {
-        dropdown.options.Clear();
-        dropdown.options.Add(new Dropdown.OptionData(text)); // might delete this line depending on how this works - repetetive 
-        foreach (string name in names)
-        {
-            dropdown.options.Add(new Dropdown.OptionData(name));
-        }
+        if (input.text.Length >= len) { dropdown.Show(); }
     }
     #endregion
 }

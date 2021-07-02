@@ -77,6 +77,7 @@ public class loginLogic : MonoBehaviour
             // If loop back this far TODO: readd placeholders and clear text
             LoginUI.SetActive(true);
             usr.SetActive(true);
+            keyboard.SetActive(true);
             pas.SetActive(false);
             loading.SetActive(false);
         }
