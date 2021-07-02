@@ -41,6 +41,7 @@ public class autofill : MonoBehaviour
     {
         // Only way to consistantly make it visible 
         if (input.text.Length >= len && showing > 0) { dropdown.Show(); }
+        else { dropdown.Hide(); }
 
         // On change of text 
         if (!currText.Equals(input.text))
@@ -65,7 +66,7 @@ public class autofill : MonoBehaviour
     // TODO: FIX THIS 
     public void queryAndUpdate()
     {
-        dropdown.Hide();
+        dropdown.Hide(); // Helps refresh dropdown menu
         // send Qury and retrieve new names list
         // foreach (string name in csv) { if (name.contains(name) ) List.Add(name);}
         // names = new names :)

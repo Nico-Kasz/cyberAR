@@ -78,6 +78,7 @@ public class loginLogic : MonoBehaviour
             LoginUI.SetActive(true);
             usr.SetActive(true);
             keyboard.SetActive(true);
+            keyboard.GetComponent<VRKeyboard.Utils.KeyboardManager>().setText(keyboard.GetComponent<VRKeyboard.Utils.KeyboardManager>().std_text_box);
             pas.SetActive(false);
             loading.SetActive(false);
         }
