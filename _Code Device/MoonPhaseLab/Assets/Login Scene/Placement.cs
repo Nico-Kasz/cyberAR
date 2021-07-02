@@ -36,7 +36,6 @@ namespace MagicLeapTools
         {
             anchored = true;
             position = transform.position;
-            rotation = rotation;
             //GameObject.find("Starfield").GetComponent<VisualEffect>().Stop();
         }
 

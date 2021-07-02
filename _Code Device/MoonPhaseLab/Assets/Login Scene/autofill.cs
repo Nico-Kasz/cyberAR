@@ -18,7 +18,7 @@ public class autofill : MonoBehaviour
     private Text input;
     private string currText;
     private Dropdown dropdown;
-    private bool onlyOne; 
+    private int showing = 0; 
     #endregion
 
 
@@ -40,7 +40,7 @@ public class autofill : MonoBehaviour
     void Update()
     {
         // Only way to consistantly make it visible 
-        if (input.text.Length >= len && !onlyOne) { dropdown.Show(); }
+        if (input.text.Length >= len && showing > 0) { dropdown.Show(); }
 
         // On change of text 
         if (!currText.Equals(input.text))
@@ -81,7 +81,7 @@ public class autofill : MonoBehaviour
                     count++;
                 }
             }
-            onlyOne = count > 1 ? false : true;         // Not sure this is operational
+            showing = count;        // Not sure this is operational
         }
 
     }
