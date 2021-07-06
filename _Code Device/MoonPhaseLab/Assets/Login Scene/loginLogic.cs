@@ -15,7 +15,8 @@ public class loginLogic : MonoBehaviour
     public GameObject anchor; 
     public GameObject placement_prop;
     public GameObject controller;
-    public GameObject modules; 
+    public GameObject modules;
+    public GameObject guestButton; 
     #endregion
 
     #region Private Variables 
@@ -61,8 +62,7 @@ public class loginLogic : MonoBehaviour
     // Keep the flow of events involving the Login UI
     public void next()
     {
-        if (++currState == 5) { currState = 0; }
-        print("Current state: " + (state)currState);
+        print("Current state: " + (state)(++currState));
 
         switch (currState)  
         {
@@ -70,6 +70,7 @@ public class loginLogic : MonoBehaviour
                 {
                     // Placement Scene
                     toggleLineRender(false);
+                    modules.SetActive(false);
                     intro.gameObject.transform.GetChild(0).gameObject.SetActive(false);
                     placement_prop.SetActive(true);
                     placed = false;
@@ -85,9 +86,9 @@ public class loginLogic : MonoBehaviour
                     LoginUI.SetActive(true);
                     usr.SetActive(true);
                     keyboard.SetActive(true);
+                    guestButton.SetActive(true);
                     keyboard.GetComponent<VRKeyboard.Utils.KeyboardManager>().resetText();
                     pas.SetActive(false);
-                    loading.SetActive(false);
                     break;
                 }
 
@@ -106,22 +107,33 @@ public class loginLogic : MonoBehaviour
                     // Submit request
                     pas.SetActive(false);
                     keyboard.SetActive(false);
+                    guestButton.SetActive(false);
                     loading.SetActive(true);
 
+
                     // THE AUTHENTICATION GOES HERE
-                    authenticate(usr.transform.GetChild(0).GetComponent<Text>().text, pas.transform.GetChild(0).GetComponent<Text>().text);
+                    authenticate(usr.transform.GetChild(0).GetComponent<Text>().text, pas.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>().text);
                     break;
                 }
 
             case 4:
                 {
                     // Load Modules 
+                    loading.SetActive(false);
                     LoginUI.SetActive(false);
+                    keyboard.SetActive(false);
                     modules.SetActive(true); 
 
                     break;
                 }
-            
+
+                // Catch if looped and extends past defined states 
+            default:
+                { 
+                    currState = -1;
+                    next();
+                    break;
+                }
         }
     }
 
@@ -137,20 +149,24 @@ public class loginLogic : MonoBehaviour
     public void guestLogin()
     {
         authenticate("guest", "guest");
-        currState = 3;
-        next();
+        gotoState((int)state.modules);
     }
 #endregion
 
 #region Private Events
     private void toggleLineRender(bool flag)
     {
-        print("doing the dirty work [|8^(");
+        // print("doing the dirty work [|8^(");
         controller.GetComponent<LineRenderer>().enabled = flag;
-        print("Line renderer: " + controller.GetComponent<LineRenderer>().enabled);
         controller.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = flag;
     }
 
-    private void authenticate(string usr, string pas) { /* authenticate => next(); else => currstate = 0, next() */}
+    private void gotoState(int state)
+    {
+        currState = state-1;  
+        next();
+    }
+
+    private void authenticate(string usr, string pas) { /* authenticate => next(); else => gotoState((int)state.usr_entry); */}
 #endregion
 }
