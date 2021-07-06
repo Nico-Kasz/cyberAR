@@ -91,14 +91,14 @@ public class autofill : MonoBehaviour
     #region Private Methods 
     private void pullCSV(List<string> names, string path)
     {
-        /*
-        string[] lines = System.IO.File.ReadAllLines(path);
+        string[] lines = new string[0]; 
+        // string[] lines = System.IO.File.ReadAllLines(path);      // No path set as of now 
         foreach (string line in lines)
         {
             string[] columns = line.Split(',');
             names.Add(columns[2]);
         }
-        */
+       
     }
 
     private void sort(List<string> names)
