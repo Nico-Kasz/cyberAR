@@ -167,6 +167,12 @@ public class loginLogic : MonoBehaviour
         next();
     }
 
-    private void authenticate(string usr, string pas) { /* authenticate => next(); else => gotoState((int)state.usr_entry); */}
+    private void authenticate(string usr, string pas) {
+        // Psuedo: authenticate => next(); else => gotoState((int)state.usr_entry);
+        if (GameObject.Find("usr_dropbox").GetComponent<autofill>().authenticate(usr, pas))
+            next();
+        else
+            gotoState((int)state.usr_entry);
+    }
 #endregion
 }

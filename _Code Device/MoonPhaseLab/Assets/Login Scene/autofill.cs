@@ -17,8 +17,10 @@ public class autofill : MonoBehaviour
     private List<string> names = new List<string>();
     private Text input;
     private string currText;
-    private Dropdown dropdown;
-    private int showing = 0; 
+    public Dropdown dropdown;  // Made public for now bc it isn't working as private
+    private int showing = 0;
+    private IDictionary<string, HashSet<string>> crnLabs;
+    private IDictionary<string, string> usrPas = new Dictionary<string, string>();
     #endregion
 
 
@@ -28,13 +30,19 @@ public class autofill : MonoBehaviour
         input = transform.GetChild(0).GetComponent<Text>();
         currText = input.text;
         // TESTING
-        string[] nameslist = new string[] { "jim", "sam", "chad", "cronie", "crestin", "crestin2", "crestion", "crestolemu", "crester", "crestunker", "Michael", "Christopher", "Jessica", "Matthew", "Ashley", "Jennifer", "Joshua", "Amanda", "Daniel", "David", "James", "Robert", "John", "Joseph", "Andrew", "Ryan", "Brandon", "Jason", "Justin", "Sarah", "William", "Jonathan", "Stephanie", "Brian", "Nicole", "Nicholas", "Anthony", "Heather", "Eric", "Elizabeth", "Adam", "Megan", "Melissa", "Kevin", "Steven", "Thomas", "Timothy", "Christina", "Kyle", "Rachel", "Laura", "Lauren", "Amber", "Brittany", "Danielle", "Richard", "Kimberly", "Jeffrey", "Amy", "Crystal", "Michelle", "Tiffany", "Jeremy", "Benjamin", "Mark", "Emily", "Aaron", "Charles", "Rebecca", "Jacob", "Stephen", "Patrick", "Sean", "Erin", "Zachary", "Jamie", "Kelly", "Samantha", "Nathan", "Sara", "Dustin", "Paul", "Angela", "Tyler", "Scott", "Katherine", "Andrea", "Gregory", "Erica", "Mary", "Travis", "Lisa", "Kenneth", "Bryan", "Lindsey", "Kristen", "Jose", "Alexander", "Jesse", "Katie", "Lindsay", "Shannon", "Vanessa", "Courtney", "Christine", "Alicia", "Cody", "Allison", "Bradley", "Samuel", "Shawn", "April", "Derek", "Kathryn", "Kristin", "Chad", "Jenna", "Tara", "Maria", "Krystal", "Jared", "Anna", "Edward", "Julie", "Peter", "Holly", "Marcus", "Kristina", "Natalie", "Jordan", "Victoria", "Jacqueline", "Corey", "Keith", "Monica", "Juan", "Donald", "Cassandra", "Meghan", "Joel", "Shane", "Phillip", "Patricia", "Brett", "Ronald", "Catherine", "George", "Antonio", "Cynthia", "Stacy", "Kathleen", "Raymond", "Carlos", "Brandi", "Douglas", "Nathaniel", "Ian", "Craig", "Brandy", "Alex", "Valerie", "Veronica", "Cory", "Whitney", "Gary", "Derrick", "Philip", "Luis", "Diana", "Chelsea", "Leslie", "Caitlin", "Leah", "Natasha", "Erika", "Casey", "Latoya", "Erik", "Dana", "Victor", "Brent", "Dominique", "Frank", "Brittney", "Evan", "Gabriel", "Julia", "Candice", "Karen", "Melanie", "Adrian", "Stacey", "Margaret", "Sheena", "Wesley", "Vincent", "Alexandra", "Katrina", "Bethany", "Nichole", "Larry", "Jeffery", "Curtis", "Carrie", "Todd", "Blake", "Christian", "Randy", "Dennis", "Alison", "Trevor", "Seth", "Kara", "Joanna", "Rachael", "Luke", "Felicia", "Brooke", "Austin", "Candace", "Jasmine", "Jesus", "Alan", "Susan", "Sandra", "Tracy", "Kayla", "Nancy", "Tina", "Krystle", "Russell", "Jeremiah", "Carl"}; // TESTING
-        foreach (string name in nameslist) { names.Add(name.ToLower()); }                                                                                        // TESTING
-        // pullCSV(names, path);
-        dropdown = GetComponent<Dropdown>();
+        //string[] nameslist = new string[] { "jim", "sam", "chad", "cronie", "crestin", "crestin2", "crestion", "crestolemu", "crester", "crestunker", "Michael", "Christopher", "Jessica", "Matthew", "Ashley", "Jennifer", "Joshua", "Amanda", "Daniel", "David", "James", "Robert", "John", "Joseph", "Andrew", "Ryan", "Brandon", "Jason", "Justin", "Sarah", "William", "Jonathan", "Stephanie", "Brian", "Nicole", "Nicholas", "Anthony", "Heather", "Eric", "Elizabeth", "Adam", "Megan", "Melissa", "Kevin", "Steven", "Thomas", "Timothy", "Christina", "Kyle", "Rachel", "Laura", "Lauren", "Amber", "Brittany", "Danielle", "Richard", "Kimberly", "Jeffrey", "Amy", "Crystal", "Michelle", "Tiffany", "Jeremy", "Benjamin", "Mark", "Emily", "Aaron", "Charles", "Rebecca", "Jacob", "Stephen", "Patrick", "Sean", "Erin", "Zachary", "Jamie", "Kelly", "Samantha", "Nathan", "Sara", "Dustin", "Paul", "Angela", "Tyler", "Scott", "Katherine", "Andrea", "Gregory", "Erica", "Mary", "Travis", "Lisa", "Kenneth", "Bryan", "Lindsey", "Kristen", "Jose", "Alexander", "Jesse", "Katie", "Lindsay", "Shannon", "Vanessa", "Courtney", "Christine", "Alicia", "Cody", "Allison", "Bradley", "Samuel", "Shawn", "April", "Derek", "Kathryn", "Kristin", "Chad", "Jenna", "Tara", "Maria", "Krystal", "Jared", "Anna", "Edward", "Julie", "Peter", "Holly", "Marcus", "Kristina", "Natalie", "Jordan", "Victoria", "Jacqueline", "Corey", "Keith", "Monica", "Juan", "Donald", "Cassandra", "Meghan", "Joel", "Shane", "Phillip", "Patricia", "Brett", "Ronald", "Catherine", "George", "Antonio", "Cynthia", "Stacy", "Kathleen", "Raymond", "Carlos", "Brandi", "Douglas", "Nathaniel", "Ian", "Craig", "Brandy", "Alex", "Valerie", "Veronica", "Cory", "Whitney", "Gary", "Derrick", "Philip", "Luis", "Diana", "Chelsea", "Leslie", "Caitlin", "Leah", "Natasha", "Erika", "Casey", "Latoya", "Erik", "Dana", "Victor", "Brent", "Dominique", "Frank", "Brittney", "Evan", "Gabriel", "Julia", "Candice", "Karen", "Melanie", "Adrian", "Stacey", "Margaret", "Sheena", "Wesley", "Vincent", "Alexandra", "Katrina", "Bethany", "Nichole", "Larry", "Jeffery", "Curtis", "Carrie", "Todd", "Blake", "Christian", "Randy", "Dennis", "Alison", "Trevor", "Seth", "Kara", "Joanna", "Rachael", "Luke", "Felicia", "Brooke", "Austin", "Candace", "Jasmine", "Jesus", "Alan", "Susan", "Sandra", "Tracy", "Kayla", "Nancy", "Tina", "Krystle", "Russell", "Jeremiah", "Carl"}; // TESTING
+        //foreach (string name in nameslist) { names.Add(name.ToLower()); }                                                                                        // TESTING
+        crnLabs = pullCSV(names);
+        dropdown = transform.GetComponent<Dropdown>();
         sort(names);
-        printNames();
-
+        // printNames();
+        foreach (HashSet<string> key in crnLabs.Values)
+        {
+            string result = "";
+            foreach (string str in key)
+                result += str;
+            print(result);
+        }
     }
 
     // Update is called once per frame
@@ -56,15 +64,17 @@ public class autofill : MonoBehaviour
     }
 
     #region Public Methods 
-    // Unsure if this works 
-    public void OnPointerClick(BaseEventData eventData) { GameObject.Find("[LOGIC]").transform.GetComponent<loginLogic>().next(); }
-
     public void printNames()
     {
+        print("printing names");
         foreach (string str in names) { print(str); }
     }
 
-    // TODO: FIX THIS 
+    public bool authenticate(string usr, string pas)
+    {
+        return usrPas.ContainsKey(usr) && usrPas[usr].Equals(pas);
+    }
+
     public void queryAndUpdate()
     {
         dropdown.Hide(); // Helps refresh dropdown menu
@@ -90,16 +100,35 @@ public class autofill : MonoBehaviour
     #endregion
 
     #region Private Methods 
-    private void pullCSV(List<string> names, string path)
+    /* Loads names into the system ATM and pushes labs into crn dictionary
+     * @param names: returned list of names 
+     * @return: Dictionary of crns with set of lab IDs
+     */
+    private IDictionary<string, HashSet<string>> pullCSV(List<string> names)
     {
-        string[] lines = new string[0]; 
-        // string[] lines = System.IO.File.ReadAllLines(path);      // No path set as of now 
-        foreach (string line in lines)
+        var result = new Dictionary<string, HashSet<string>>();
+        string crnPath = "C:/Users/nrk2t/Documents/GitHub/cyberARclone/_Code Device/MoonPhaseLab/Assets/Login Scene/csv bank/crn_to_labs.csv";
+        string  namesPath = "C:/Users/nrk2t/Documents/GitHub/cyberARclone/_Code Device/MoonPhaseLab/Assets/Login Scene/csv bank/test_names.csv";
+        string[] lines = System.IO.File.ReadAllLines(namesPath);
+
+        for (int i = 1; i < lines.Length; i++)
         {
-            string[] columns = line.Split(',');
-            names.Add(columns[2]);
+            string[] columns = lines[i].Split(',');
+            names.Add(columns[1]);
+            usrPas.Add(columns[1], columns[4]);
         }
-       
+
+        lines = System.IO.File.ReadAllLines(crnPath);
+
+        for (int i = 1; i < lines.Length; i++)
+        {
+            string[] columns = lines[i].Split(',');
+            HashSet<string> hash = new HashSet<string>();
+            for (int j = 1; j < columns.Length; j++) { hash.Add(columns[j]); }
+            result.Add(columns[0], hash);
+        }
+
+        return result;
     }
 
     private void sort(List<string> names)
