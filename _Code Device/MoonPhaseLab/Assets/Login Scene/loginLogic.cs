@@ -39,8 +39,8 @@ public class loginLogic : MonoBehaviour
     void Start()
     {
         intro.SetActive(true);
-        StartCoroutine(DownloadFile("Assets/Login Scene/csv bank/test_names.csv"));
-        StartCoroutine(DownloadFile("Assets/Login Scene/csv bank/test_names.csv"));
+        StartCoroutine(DownloadFile("http://cyberlearnar.cs.mtsu.edu/show_uploaded/test_names.csv","Assets/Login Scene/csv bank/test_names.csv"));
+        StartCoroutine(DownloadFile("http://cyberlearnar.cs.mtsu.edu/show_uploaded/crn_to_labs.csv","Assets/Login Scene/csv bank/crn_to_labs.csv"));
     }
 
     // Update is called once per frame
@@ -158,9 +158,9 @@ public class loginLogic : MonoBehaviour
     #endregion
 
     #region Private Events
-    IEnumerator DownloadFile(string path)
+    IEnumerator DownloadFile(string webpath, string path)
     {
-        var uwr = new UnityWebRequest("http://cyberlearnar.cs.mtsu.edu/show_uploaded/test_names.csv", UnityWebRequest.kHttpVerbGET);
+        var uwr = new UnityWebRequest(webpath, UnityWebRequest.kHttpVerbGET);
         uwr.downloadHandler = new DownloadHandlerFile(path);
         yield return uwr.SendWebRequest();
         if (uwr.result != UnityWebRequest.Result.Success)
