@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
 public class loginLogic : MonoBehaviour
 {
@@ -38,6 +39,8 @@ public class loginLogic : MonoBehaviour
     void Start()
     {
         intro.SetActive(true);
+        StartCoroutine(DownloadFile("Assets/Login Scene/csv bank/test_names.csv"));
+        StartCoroutine(DownloadFile("Assets/Login Scene/csv bank/test_names.csv"));
     }
 
     // Update is called once per frame
@@ -82,6 +85,7 @@ public class loginLogic : MonoBehaviour
                     // User Entry
                     // If loop back this far TODO: readd placeholders and clear text
                     toggleLineRender(true);
+                    loading.SetActive(false);
                     placement_prop.SetActive(false);
                     LoginUI.SetActive(true);
                     usr.SetActive(true);
@@ -149,11 +153,22 @@ public class loginLogic : MonoBehaviour
     public void guestLogin()
     {
         authenticate("guest", "guest");
-        gotoState((int)state.modules);
+        // gotoState((int)state.modules);       //skips authentication if active
     }
-#endregion
+    #endregion
 
-#region Private Events
+    #region Private Events
+    IEnumerator DownloadFile(string path)
+    {
+        var uwr = new UnityWebRequest("http://cyberlearnar.cs.mtsu.edu/show_uploaded/test_names.csv", UnityWebRequest.kHttpVerbGET);
+        uwr.downloadHandler = new DownloadHandlerFile(path);
+        yield return uwr.SendWebRequest();
+        if (uwr.result != UnityWebRequest.Result.Success)
+            Debug.LogError(uwr.error);
+        else
+            Debug.Log("File successfully downloaded and saved to " + path);
+    }
+
     private void toggleLineRender(bool flag)
     {
         // print("doing the dirty work [|8^(");
@@ -169,8 +184,8 @@ public class loginLogic : MonoBehaviour
 
     private void authenticate(string usr, string pas) {
         // Psuedo: authenticate => next(); else => gotoState((int)state.usr_entry);
-        if (GameObject.Find("usr_dropbox").GetComponent<autofill>().authenticate(usr, pas))
-            next();
+        if (this.usr.GetComponent<autofill>().authenticate(usr, pas))
+            gotoState((int)state.modules);
         else
             gotoState((int)state.usr_entry);
     }

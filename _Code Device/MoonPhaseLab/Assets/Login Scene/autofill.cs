@@ -19,8 +19,8 @@ public class autofill : MonoBehaviour
     private string currText;
     public Dropdown dropdown;  // Made public for now bc it isn't working as private
     private int showing = 0;
+    private List<User> users = new List<User>();
     private IDictionary<string, HashSet<string>> crnLabs;
-    private IDictionary<string, string> usrPas = new Dictionary<string, string>();
     #endregion
 
 
@@ -32,17 +32,13 @@ public class autofill : MonoBehaviour
         // TESTING
         //string[] nameslist = new string[] { "jim", "sam", "chad", "cronie", "crestin", "crestin2", "crestion", "crestolemu", "crester", "crestunker", "Michael", "Christopher", "Jessica", "Matthew", "Ashley", "Jennifer", "Joshua", "Amanda", "Daniel", "David", "James", "Robert", "John", "Joseph", "Andrew", "Ryan", "Brandon", "Jason", "Justin", "Sarah", "William", "Jonathan", "Stephanie", "Brian", "Nicole", "Nicholas", "Anthony", "Heather", "Eric", "Elizabeth", "Adam", "Megan", "Melissa", "Kevin", "Steven", "Thomas", "Timothy", "Christina", "Kyle", "Rachel", "Laura", "Lauren", "Amber", "Brittany", "Danielle", "Richard", "Kimberly", "Jeffrey", "Amy", "Crystal", "Michelle", "Tiffany", "Jeremy", "Benjamin", "Mark", "Emily", "Aaron", "Charles", "Rebecca", "Jacob", "Stephen", "Patrick", "Sean", "Erin", "Zachary", "Jamie", "Kelly", "Samantha", "Nathan", "Sara", "Dustin", "Paul", "Angela", "Tyler", "Scott", "Katherine", "Andrea", "Gregory", "Erica", "Mary", "Travis", "Lisa", "Kenneth", "Bryan", "Lindsey", "Kristen", "Jose", "Alexander", "Jesse", "Katie", "Lindsay", "Shannon", "Vanessa", "Courtney", "Christine", "Alicia", "Cody", "Allison", "Bradley", "Samuel", "Shawn", "April", "Derek", "Kathryn", "Kristin", "Chad", "Jenna", "Tara", "Maria", "Krystal", "Jared", "Anna", "Edward", "Julie", "Peter", "Holly", "Marcus", "Kristina", "Natalie", "Jordan", "Victoria", "Jacqueline", "Corey", "Keith", "Monica", "Juan", "Donald", "Cassandra", "Meghan", "Joel", "Shane", "Phillip", "Patricia", "Brett", "Ronald", "Catherine", "George", "Antonio", "Cynthia", "Stacy", "Kathleen", "Raymond", "Carlos", "Brandi", "Douglas", "Nathaniel", "Ian", "Craig", "Brandy", "Alex", "Valerie", "Veronica", "Cory", "Whitney", "Gary", "Derrick", "Philip", "Luis", "Diana", "Chelsea", "Leslie", "Caitlin", "Leah", "Natasha", "Erika", "Casey", "Latoya", "Erik", "Dana", "Victor", "Brent", "Dominique", "Frank", "Brittney", "Evan", "Gabriel", "Julia", "Candice", "Karen", "Melanie", "Adrian", "Stacey", "Margaret", "Sheena", "Wesley", "Vincent", "Alexandra", "Katrina", "Bethany", "Nichole", "Larry", "Jeffery", "Curtis", "Carrie", "Todd", "Blake", "Christian", "Randy", "Dennis", "Alison", "Trevor", "Seth", "Kara", "Joanna", "Rachael", "Luke", "Felicia", "Brooke", "Austin", "Candace", "Jasmine", "Jesus", "Alan", "Susan", "Sandra", "Tracy", "Kayla", "Nancy", "Tina", "Krystle", "Russell", "Jeremiah", "Carl"}; // TESTING
         //foreach (string name in nameslist) { names.Add(name.ToLower()); }                                                                                        // TESTING
+        
         crnLabs = pullCSV(names);
-        dropdown = transform.GetComponent<Dropdown>();
+        dropdown = GetComponent<Dropdown>();
         sort(names);
         // printNames();
-        foreach (HashSet<string> key in crnLabs.Values)
-        {
-            string result = "";
-            foreach (string str in key)
-                result += str;
-            print(result);
-        }
+
+        foreach (User usr in users) { print(usr.ToString()); }
     }
 
     // Update is called once per frame
@@ -56,7 +52,7 @@ public class autofill : MonoBehaviour
         if (!currText.Equals(input.text))
         {
             currText = input.text;
-            print("Username updated to: " + currText);
+            print("Username updated to: " + currText);     // for debugging
 
             queryAndUpdate();
             makeShow();
@@ -72,8 +68,15 @@ public class autofill : MonoBehaviour
 
     public bool authenticate(string usr, string pas)
     {
-        return usrPas.ContainsKey(usr) && usrPas[usr].Equals(pas);
+        try {
+            Debug.Log("Username: " + usr + ", Password: " + pas + "\n\t   Authenticated: " + (users.Find(x => x.usr.Equals(usr)).pas.Equals(pas)));
+            return users.Find(x => x.usr.Equals(usr)).pas.Equals(pas);
+        } catch  {
+            print("Authentication Failed: Invalid Username");
+            return false;
+        }
     }
+
 
     public void queryAndUpdate()
     {
@@ -92,7 +95,7 @@ public class autofill : MonoBehaviour
                     dropdown.options.Add(new Dropdown.OptionData(name));
                     count++;
                 }
-            }
+            } 
             showing = count;        // Not sure this is operational
         }
 
@@ -100,22 +103,22 @@ public class autofill : MonoBehaviour
     #endregion
 
     #region Private Methods 
-    /* Loads names into the system ATM and pushes labs into crn dictionary
+    /* Loads names into the system while creating a list of User objects and pushes labs into crn dictionary
      * @param names: returned list of names 
      * @return: Dictionary of crns with set of lab IDs
      */
     private IDictionary<string, HashSet<string>> pullCSV(List<string> names)
     {
         var result = new Dictionary<string, HashSet<string>>();
-        string crnPath = "C:/Users/nrk2t/Documents/GitHub/cyberARclone/_Code Device/MoonPhaseLab/Assets/Login Scene/csv bank/crn_to_labs.csv";
-        string  namesPath = "C:/Users/nrk2t/Documents/GitHub/cyberARclone/_Code Device/MoonPhaseLab/Assets/Login Scene/csv bank/test_names.csv";
+        string crnPath = "Assets/Login Scene/csv bank/crn_to_labs.csv";
+        string  namesPath = "Assets/Login Scene/csv bank/test_names.csv";
         string[] lines = System.IO.File.ReadAllLines(namesPath);
 
         for (int i = 1; i < lines.Length; i++)
         {
             string[] columns = lines[i].Split(',');
-            names.Add(columns[1]);
-            usrPas.Add(columns[1], columns[4]);
+            names.Add(columns[0]);
+            users.Add(new User(columns[0], columns[4], columns[2]));
         }
 
         lines = System.IO.File.ReadAllLines(crnPath);
@@ -142,4 +145,23 @@ public class autofill : MonoBehaviour
         if (input.text.Length >= len) { dropdown.Show(); }
     }
     #endregion
+}
+
+/* Used to store Student Usernames, Passwords, and CRNs as of now 
+ * All objects are added to a list where they can be searched
+*/
+class User 
+{
+    public string usr;
+    public string pas;
+    public string crn;
+
+    public User(string usr, string pas, string crn)
+    {
+        this.usr = usr;
+        this.pas = pas;
+        this.crn = crn; 
+    }
+
+    public string ToString() { return ("Username: " + usr + "\tPassword: " + pas + "\t\tCRN: " + crn); }
 }
