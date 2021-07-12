@@ -39,7 +39,6 @@ public class autofill : MonoBehaviour
         // printNames();
         // foreach (string crn in crnLabs.Keys) { string outtie = ""; foreach (string str in getLabs(crn)) { outtie += str + " "; } print(outtie);  }
         foreach (User usr in users) { print(usr.ToString()); }
-        users.Add(new User("guest", "guest", "0000000"));
     }
 
     // Update is called once per frame
@@ -68,7 +67,6 @@ public class autofill : MonoBehaviour
 
     public bool authenticate(string usr, string pas)
     {
-        return true; // Leap test; DELETE WHEN YOU SEE THIS 
         try {
             Debug.Log("Username: " + usr + ", Password: " + pas + "\n\t    Authenticated: " + (users.Find(x => x.usr.Equals(usr)).pas.Equals(pas)));
             return users.Find(x => x.usr.Equals(usr)).pas.Equals(pas);
