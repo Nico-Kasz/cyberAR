@@ -16,7 +16,6 @@ namespace VRKeyboard.Utils
         [Tooltip("If the character is uppercase at the initialization")]
         public bool isUppercase = false;
         public int maxInputLength;
-        public GameObject dropbox;
 
         [Header("Text Boxes")]
         public Text std_text_box;

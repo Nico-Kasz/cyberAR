@@ -31,14 +31,15 @@ public class autofill : MonoBehaviour
         currText = input.text;
         // TESTING
         //string[] nameslist = new string[] { "jim", "sam", "chad", "cronie", "crestin", "crestin2", "crestion", "crestolemu", "crester", "crestunker", "Michael", "Christopher", "Jessica", "Matthew", "Ashley", "Jennifer", "Joshua", "Amanda", "Daniel", "David", "James", "Robert", "John", "Joseph", "Andrew", "Ryan", "Brandon", "Jason", "Justin", "Sarah", "William", "Jonathan", "Stephanie", "Brian", "Nicole", "Nicholas", "Anthony", "Heather", "Eric", "Elizabeth", "Adam", "Megan", "Melissa", "Kevin", "Steven", "Thomas", "Timothy", "Christina", "Kyle", "Rachel", "Laura", "Lauren", "Amber", "Brittany", "Danielle", "Richard", "Kimberly", "Jeffrey", "Amy", "Crystal", "Michelle", "Tiffany", "Jeremy", "Benjamin", "Mark", "Emily", "Aaron", "Charles", "Rebecca", "Jacob", "Stephen", "Patrick", "Sean", "Erin", "Zachary", "Jamie", "Kelly", "Samantha", "Nathan", "Sara", "Dustin", "Paul", "Angela", "Tyler", "Scott", "Katherine", "Andrea", "Gregory", "Erica", "Mary", "Travis", "Lisa", "Kenneth", "Bryan", "Lindsey", "Kristen", "Jose", "Alexander", "Jesse", "Katie", "Lindsay", "Shannon", "Vanessa", "Courtney", "Christine", "Alicia", "Cody", "Allison", "Bradley", "Samuel", "Shawn", "April", "Derek", "Kathryn", "Kristin", "Chad", "Jenna", "Tara", "Maria", "Krystal", "Jared", "Anna", "Edward", "Julie", "Peter", "Holly", "Marcus", "Kristina", "Natalie", "Jordan", "Victoria", "Jacqueline", "Corey", "Keith", "Monica", "Juan", "Donald", "Cassandra", "Meghan", "Joel", "Shane", "Phillip", "Patricia", "Brett", "Ronald", "Catherine", "George", "Antonio", "Cynthia", "Stacy", "Kathleen", "Raymond", "Carlos", "Brandi", "Douglas", "Nathaniel", "Ian", "Craig", "Brandy", "Alex", "Valerie", "Veronica", "Cory", "Whitney", "Gary", "Derrick", "Philip", "Luis", "Diana", "Chelsea", "Leslie", "Caitlin", "Leah", "Natasha", "Erika", "Casey", "Latoya", "Erik", "Dana", "Victor", "Brent", "Dominique", "Frank", "Brittney", "Evan", "Gabriel", "Julia", "Candice", "Karen", "Melanie", "Adrian", "Stacey", "Margaret", "Sheena", "Wesley", "Vincent", "Alexandra", "Katrina", "Bethany", "Nichole", "Larry", "Jeffery", "Curtis", "Carrie", "Todd", "Blake", "Christian", "Randy", "Dennis", "Alison", "Trevor", "Seth", "Kara", "Joanna", "Rachael", "Luke", "Felicia", "Brooke", "Austin", "Candace", "Jasmine", "Jesus", "Alan", "Susan", "Sandra", "Tracy", "Kayla", "Nancy", "Tina", "Krystle", "Russell", "Jeremiah", "Carl"}; // TESTING
-        //foreach (string name in nameslist) { names.Add(name.ToLower()); }                                                                                        // TESTING
+        //foreach (string name in nameslist) { names.Add(name.ToLower()); }        // TESTING
         
         crnLabs = pullCSV(names);
         dropdown = GetComponent<Dropdown>();
         sort(names);
         // printNames();
-
+        // foreach (string crn in crnLabs.Keys) { string outtie = ""; foreach (string str in getLabs(crn)) { outtie += str + " "; } print(outtie);  }
         foreach (User usr in users) { print(usr.ToString()); }
+        users.Add(new User("guest", "guest", "0000000"));
     }
 
     // Update is called once per frame
@@ -54,8 +55,7 @@ public class autofill : MonoBehaviour
             currText = input.text;
             print("Username updated to: " + currText);     // for debugging
 
-            queryAndUpdate();
-            makeShow();
+            updateDropdown();
         }
     }
 
@@ -68,8 +68,9 @@ public class autofill : MonoBehaviour
 
     public bool authenticate(string usr, string pas)
     {
+        return true; // Leap test; DELETE WHEN YOU SEE THIS 
         try {
-            Debug.Log("Username: " + usr + ", Password: " + pas + "\n\t   Authenticated: " + (users.Find(x => x.usr.Equals(usr)).pas.Equals(pas)));
+            Debug.Log("Username: " + usr + ", Password: " + pas + "\n\t    Authenticated: " + (users.Find(x => x.usr.Equals(usr)).pas.Equals(pas)));
             return users.Find(x => x.usr.Equals(usr)).pas.Equals(pas);
         } catch  {
             print("Authentication Failed: Invalid Username");
@@ -78,7 +79,7 @@ public class autofill : MonoBehaviour
     }
 
 
-    public void queryAndUpdate()
+    public void updateDropdown()
     {
         dropdown.Hide(); // Helps refresh dropdown menu
         // send Qury and retrieve new names list
@@ -86,8 +87,10 @@ public class autofill : MonoBehaviour
         // names = new names :)
         if (input.text.Length >= len)
         {
-            dropdown.options.Clear();
+            dropdown.options.Clear();   // Ensures list is empty to start filling
             int count = 0;
+
+            // Cycle names list and pick ones that contain provided string
             foreach (string name in names)
             {
                 if (name.Contains(input.text) && count < optionLimit)
@@ -96,20 +99,38 @@ public class autofill : MonoBehaviour
                     count++;
                 }
             } 
-            showing = count;        // Not sure this is operational
+            showing = count;    // Ensures that if no options appear, a blank dropdown won't appear
         }
 
+    }
+
+    // Returns a sorted String Array of all labs associated with a CRN 
+    public string[] getLabs(string usr)
+    {
+        string crn = "0000000";  // Guest crn: seven 0s
+        try { crn = users.Find(x => x.usr.Equals(usr)).crn; }
+        catch { print("using guest button or invalid Username"); }
+        string[] labs = new string[crnLabs[crn].Count];
+
+        // Copy HashSet to String[]
+        crnLabs[crn].CopyTo(labs);
+
+        // Sort and return new Array
+        Array.Sort(labs, (s1, s2) => String.Compare(s1, s2));
+        return labs;
     }
     #endregion
 
     #region Private Methods 
-    /* Loads names into the system while creating a list of User objects and pushes labs into crn dictionary
-     * @param names: returned list of names 
-     * @return: Dictionary of crns with set of lab IDs
+    /* Loads names into the system while creating a list of User objects and pushes labs into crn dictionary.
+     * @param List<string> names: List that this method stores usernames in.
+     * @return: Dictionary of crns with set of lab IDs.
      */
     private IDictionary<string, HashSet<string>> pullCSV(List<string> names)
     {
         var result = new Dictionary<string, HashSet<string>>();
+
+        // Set path for where to pull data from
         string crnPath = "Assets/Login Scene/csv bank/crn_to_labs.csv";
         string  namesPath = "Assets/Login Scene/csv bank/test_names.csv";
         string[] lines = System.IO.File.ReadAllLines(namesPath);
@@ -138,11 +159,6 @@ public class autofill : MonoBehaviour
     {
         names.Sort();                                               // used for List<string> implementation 
         // Array.Sort(names, (s1, s2) => String.Compare(s1, s2));   // used for string[] implementation
-    }
-
-    private void makeShow()
-    {
-        if (input.text.Length >= len) { dropdown.Show(); }
     }
     #endregion
 }

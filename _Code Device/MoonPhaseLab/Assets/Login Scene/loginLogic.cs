@@ -22,7 +22,6 @@ public class loginLogic : MonoBehaviour
 
     #region Private Variables 
     private bool placed = false; 
-    private bool repeatUser = true; // This is for testing, this is replaced by authenticating user/pass server-side to determine whether or not to repeat
     private int currState = -1; 
     private enum state
     {
@@ -41,22 +40,23 @@ public class loginLogic : MonoBehaviour
         intro.SetActive(true);
         StartCoroutine(DownloadFile("http://cyberlearnar.cs.mtsu.edu/show_uploaded/test_names.csv","Assets/Login Scene/csv bank/test_names.csv"));
         StartCoroutine(DownloadFile("http://cyberlearnar.cs.mtsu.edu/show_uploaded/crn_to_labs.csv","Assets/Login Scene/csv bank/crn_to_labs.csv"));
+        toggleLineRender(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
         // After initial animation, this will initiate placement scene, then the login screen 
-        if (!placed && intro.gameObject.transform.GetChild(0).gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+        if (intro.gameObject.transform.GetChild(0).GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle"))
         {
-            print("Animation at idle; starting placement scene.");
+            print("Animation at idle; starting placement scene. :)");
             next();
         }
         if (placement_prop.active && !placed)
         {
             anchor.transform.position = controller.transform.position; // + new Vector3(0, .5f, 0); 
-            anchor.transform.eulerAngles = new Vector3(0, controller.transform.eulerAngles.y, 0);
+            // anchor.transform.eulerAngles = new Vector3(0, controller.transform.eulerAngles.y, 0);  // I Disabled this after adding simple rotation to it 
         } 
     }
     #endregion
@@ -65,7 +65,7 @@ public class loginLogic : MonoBehaviour
     // Keep the flow of events involving the Login UI
     public void next()
     {
-        print("Current state: " + (state)(++currState));
+        print("Current state: " + (state)(++currState) + "\n========================");
 
         switch (currState)  
         {
@@ -126,12 +126,13 @@ public class loginLogic : MonoBehaviour
                     loading.SetActive(false);
                     LoginUI.SetActive(false);
                     keyboard.SetActive(false);
-                    modules.SetActive(true); 
-
+                    modules.SetActive(true);
+                    setModules();
                     break;
                 }
 
                 // Catch if looped and extends past defined states 
+                // returns back to placement scene
             default:
                 { 
                     currState = -1;
@@ -141,23 +142,33 @@ public class loginLogic : MonoBehaviour
         }
     }
 
+    // Anchors scene to location of controller 
     public void place()
     {
-        if (!placed)
+        if (!placed && placement_prop.active)
         {
             placed = true;
             next();
         }
     }
 
+    // Called to automatically log in as "guest"
     public void guestLogin()
     {
+        // Fill in usr/pas perameters so no errors will be thrown 
+        // Also disables placeholders so it doesn't look ugly if user didn't type in user or pas perameters and has to retern to start
+        usr.transform.GetChild(0).GetComponent<Text>().text = "guest";
+        usr.transform.GetChild(1).gameObject.SetActive(false);
+        pas.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>().text = "guest";
+        pas.transform.GetChild(1).gameObject.SetActive(false);
+
         authenticate("guest", "guest");
         // gotoState((int)state.modules);       //skips authentication if active
     }
     #endregion
 
     #region Private Events
+    // Downloads CSVs before autofill script on usr_dropbox is instantiated 
     IEnumerator DownloadFile(string webpath, string path)
     {
         var uwr = new UnityWebRequest(webpath, UnityWebRequest.kHttpVerbGET);
@@ -169,6 +180,7 @@ public class loginLogic : MonoBehaviour
             Debug.Log("File successfully downloaded and saved to " + path);
     }
 
+    // Toggles line renderer emitted from controller
     private void toggleLineRender(bool flag)
     {
         // print("doing the dirty work [|8^(");
@@ -176,18 +188,32 @@ public class loginLogic : MonoBehaviour
         controller.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = flag;
     }
 
+    // Called to change state if the state requested cannot be reached calling next();
     private void gotoState(int state)
     {
         currState = state-1;  
         next();
     }
 
+    // Calls script in autofill to authenticate based on usr/pas logged 
     private void authenticate(string usr, string pas) {
-        // Psuedo: authenticate => next(); else => gotoState((int)state.usr_entry);
         if (this.usr.GetComponent<autofill>().authenticate(usr, pas))
             gotoState((int)state.modules);
         else
             gotoState((int)state.usr_entry);
+    }
+
+    // Assigns a String to a Text Field on the Modules tab
+    // NOT final implementation, just to pull crn and associated lab data together
+    private void setModules()
+    {
+        string[] labs = usr.GetComponent<autofill>().getLabs(usr.transform.GetChild(0).GetComponent<Text>().text);
+        string modulesTxt = "";
+        for (int i = 0; i < labs.Length; i++)
+        {
+            modulesTxt += (i+1) + ": " + labs[i] + "\n";
+        }
+        modules.transform.GetChild(2).GetComponent<Text>().text = modulesTxt.Substring(0);
     }
 #endregion
 }
