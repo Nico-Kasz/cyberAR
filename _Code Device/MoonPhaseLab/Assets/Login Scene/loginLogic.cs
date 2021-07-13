@@ -29,7 +29,8 @@ public class loginLogic : MonoBehaviour
         usr_entry,
         pass_entry,
         authentication,
-        modules
+        modules, 
+        end_of_states
     }
     #endregion
 
@@ -62,6 +63,15 @@ public class loginLogic : MonoBehaviour
     #endregion
 
     #region Public Events
+    public void realign() 
+    {
+        anchor.transform.position = controller.transform.position;
+        anchor.transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, 0);
+
+        // change orientation of starfield
+        GameObject.Find("Starfield").transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, 0);
+    }
+
     // Keep the flow of events involving the Login UI
     public void next()
     {
@@ -77,6 +87,11 @@ public class loginLogic : MonoBehaviour
                     intro.gameObject.transform.GetChild(0).gameObject.SetActive(false);
                     placement_prop.SetActive(true);
                     placed = false;
+
+                    // Clearing username options: 
+                    print("clearing usernames");
+                    usr.GetComponent<Dropdown>().options.Clear();
+                    usr.GetComponent<autofill>().refreshText();
                     break;
                 }
 
@@ -89,6 +104,7 @@ public class loginLogic : MonoBehaviour
                     placement_prop.SetActive(false);
                     LoginUI.SetActive(true);
                     usr.SetActive(true);
+                    usr.GetComponent<Dropdown>().Hide();
                     keyboard.SetActive(true);
                     guestButton.SetActive(true);
                     keyboard.GetComponent<VRKeyboard.Utils.KeyboardManager>().resetText();
@@ -160,7 +176,7 @@ public class loginLogic : MonoBehaviour
         usr.transform.GetChild(0).GetComponent<Text>().text = "guest";
         usr.transform.GetChild(1).gameObject.SetActive(false);
         pas.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>().text = "guest";
-        pas.transform.GetChild(1).gameObject.SetActive(false);
+        pas.transform.GetChild(0).transform.GetChild(1).gameObject.SetActive(false);
 
         authenticate("guest", "guest");
         // gotoState((int)state.modules);       //skips authentication if active
