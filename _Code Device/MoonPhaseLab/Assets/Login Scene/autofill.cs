@@ -30,6 +30,7 @@ public class autofill : MonoBehaviour
         // initialize textfield 
         input = transform.GetChild(0).GetComponent<Text>();
         dropdown = GetComponent<Dropdown>();
+        currText = input.text;
         refreshText();
 
 
@@ -81,7 +82,10 @@ public class autofill : MonoBehaviour
     public bool authenticate(string usr, string pas)
     {
         if (usr.Equals("guest")) // TESTING - not final implementation
+        {
+            print("Authenticating as guest.");
             return true;
+        }
         try {
             Debug.Log("Username: " + usr + ", Password: " + pas + "\n\t    Authenticated: " + (users.Find(x => x.usr.Equals(usr)).pas.Equals(pas)));
             return users.Find(x => x.usr.Equals(usr)).pas.Equals(pas);

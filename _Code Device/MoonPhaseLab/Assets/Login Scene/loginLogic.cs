@@ -65,6 +65,7 @@ public class loginLogic : MonoBehaviour
     #region Public Events
     public void realign() 
     {
+        print("Realigning UI.");
         anchor.transform.position = controller.transform.position;
         anchor.transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, 0);
 
@@ -87,11 +88,6 @@ public class loginLogic : MonoBehaviour
                     intro.gameObject.transform.GetChild(0).gameObject.SetActive(false);
                     placement_prop.SetActive(true);
                     placed = false;
-
-                    // Clearing username options: 
-                    print("clearing usernames");
-                    usr.GetComponent<Dropdown>().options.Clear();
-                    usr.GetComponent<autofill>().refreshText();
                     break;
                 }
 
@@ -150,7 +146,12 @@ public class loginLogic : MonoBehaviour
                 // Catch if looped and extends past defined states 
                 // returns back to placement scene
             default:
-                { 
+                {
+                    // Clearing username options: 
+                    print("clearing usernames");
+                    usr.GetComponent<Dropdown>().options.Clear();
+                    usr.GetComponent<autofill>().refreshText();
+
                     currState = -1;
                     next();
                     break;
@@ -229,7 +230,7 @@ public class loginLogic : MonoBehaviour
         {
             modulesTxt += (i+1) + ": " + labs[i] + "\n";
         }
-        modules.transform.GetChild(2).GetComponent<Text>().text = modulesTxt.Substring(0);
+        modules.transform.GetChild(2).GetComponent<Text>().text = modulesTxt;
     }
 #endregion
 }
