@@ -126,7 +126,7 @@ public class loginLogic : MonoBehaviour
                     pas.SetActive(true);
 
                     // Sets the keyboard text box to the Password Text box
-                    keyboard.GetComponent<VRKeyboard.Utils.KeyboardManager>().setText(pas.gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).GetComponent<Text>());
+                    keyboard.GetComponent<VRKeyboard.Utils.KeyboardManager>().setText(pas.gameObject.transform.GetChild(0).GetComponent<Text>());
                     break;
                 }
 
@@ -144,7 +144,7 @@ public class loginLogic : MonoBehaviour
 
 
                     // THE AUTHENTICATION GOES HERE
-                    authenticate(usr.transform.GetChild(0).GetComponent<Text>().text, pas.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>().text);
+                    authenticate(usr.transform.GetChild(0).GetComponent<Text>().text, pas.transform.GetChild(0).GetComponent<Text>().text);
                     break;
                 }
 
@@ -192,8 +192,8 @@ public class loginLogic : MonoBehaviour
         // Also disables placeholders so it doesn't look ugly if user didn't type in user or pas perameters and has to retern to start
         usr.transform.GetChild(0).GetComponent<Text>().text = "guest";
         usr.transform.GetChild(1).gameObject.SetActive(false);
-        pas.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>().text = "guest";
-        pas.transform.GetChild(0).transform.GetChild(1).gameObject.SetActive(false);
+        pas.transform.GetChild(0).GetComponent<Text>().text = "guest";
+        pas.transform.GetChild(1).gameObject.SetActive(false);
 
         // Goes through normal authentication after filling in both perameters
         gotoState((int)state.authentication);
