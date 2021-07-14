@@ -47,6 +47,10 @@ public class loginLogic : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // disable line renderer in startup animation
+        // Might cuase lag due to being checked every update
+        if (currState == -1) 
+            toggleLineRender(false);
 
         // After initial animation, this will initiate placement scene, then the login screen 
         if (intro.gameObject.transform.GetChild(0).GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle"))
@@ -63,6 +67,7 @@ public class loginLogic : MonoBehaviour
     #endregion
 
     #region Public Events
+    // OnHomeButtonDown() realigns UI to position of controller and angle head is pointing
     public void realign() 
     {
         print("Realigning UI.");
@@ -80,46 +85,57 @@ public class loginLogic : MonoBehaviour
 
         switch (currState)  
         {
-            case 0: 
+            case 0: // Placement scene
                 {
-                    // Placement Scene
+                    // disable linerenderer and MTSU model to look cleaner
                     toggleLineRender(false);
-                    modules.SetActive(false);
                     intro.gameObject.transform.GetChild(0).gameObject.SetActive(false);
+
+                    // Start placement scene and ensure it hasn't already been anchored before it started 
                     placement_prop.SetActive(true);
                     placed = false;
                     break;
                 }
 
-            case 1: 
+            case 1: // User Entry
                 {
-                    // User Entry
-                    // If loop back this far TODO: readd placeholders and clear text
+                    // Cleanup placement object
                     toggleLineRender(true);
-                    loading.SetActive(false);
                     placement_prop.SetActive(false);
+
+                    // Cleanup failed authentication
+                    loading.SetActive(false);
+                    print("clearing usernames");
+                    usr.GetComponent<Dropdown>().options.Clear();
+
+                    // Start UI
                     LoginUI.SetActive(true);
                     usr.SetActive(true);
-                    usr.GetComponent<Dropdown>().Hide();
                     keyboard.SetActive(true);
                     guestButton.SetActive(true);
-                    keyboard.GetComponent<VRKeyboard.Utils.KeyboardManager>().resetText();
                     pas.SetActive(false);
                     break;
                 }
 
-            case 2: 
+            case 2: // Pass Entry
                 {
-                    // Pass Entry
+                    // Disable User entry
                     usr.SetActive(false);
+
+                    // Enable Pass Entry
                     pas.SetActive(true);
+
                     // Sets the keyboard text box to the Password Text box
                     keyboard.GetComponent<VRKeyboard.Utils.KeyboardManager>().setText(pas.gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).GetComponent<Text>());
                     break;
                 }
 
-            case 3: 
+            case 3: // Authentication
                 {
+                    // Cleanup in-case authentication fails
+                    usr.GetComponent<autofill>().refreshText();
+                    keyboard.GetComponent<VRKeyboard.Utils.KeyboardManager>().resetText();
+
                     // Submit request
                     pas.SetActive(false);
                     keyboard.SetActive(false);
@@ -132,12 +148,13 @@ public class loginLogic : MonoBehaviour
                     break;
                 }
 
-            case 4:
+            case 4: // Modules
                 {
-                    // Load Modules 
-                    loading.SetActive(false);
+                    // Disable UI and Keyboard 
                     LoginUI.SetActive(false);
                     keyboard.SetActive(false);
+
+                    // Load Modules 
                     modules.SetActive(true);
                     setModules();
                     break;
@@ -147,13 +164,11 @@ public class loginLogic : MonoBehaviour
                 // returns back to placement scene
             default:
                 {
-                    // Clearing username options: 
-                    print("clearing usernames");
-                    usr.GetComponent<Dropdown>().options.Clear();
-                    usr.GetComponent<autofill>().refreshText();
+                    // Disable modules 
+                    modules.SetActive(false);
 
-                    currState = -1;
-                    next();
+                    // Loop back to Start
+                    gotoState(0);
                     break;
                 }
         }
@@ -162,7 +177,8 @@ public class loginLogic : MonoBehaviour
     // Anchors scene to location of controller 
     public void place()
     {
-        if (!placed && placement_prop.active)
+        // Ensures that prop isn't anchored before the placement scene
+        if (placement_prop.active && !placed)
         {
             placed = true;
             next();
@@ -179,8 +195,8 @@ public class loginLogic : MonoBehaviour
         pas.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>().text = "guest";
         pas.transform.GetChild(0).transform.GetChild(1).gameObject.SetActive(false);
 
-        authenticate("guest", "guest");
-        // gotoState((int)state.modules);       //skips authentication if active
+        // Goes through normal authentication after filling in both perameters
+        gotoState((int)state.authentication);
     }
     #endregion
 
@@ -218,10 +234,12 @@ public class loginLogic : MonoBehaviour
             gotoState((int)state.modules);
         else
             gotoState((int)state.usr_entry);
+        // One-line alternative
+        // gotoState((int)(this.usr.GetComponent<autofill>().authenticate(usr, pas)) ? state.modules : state.usr_entry);
     }
 
     // Assigns a String to a Text Field on the Modules tab
-    // NOT final implementation, just to pull crn and associated lab data together
+    // NOT final implementation; just to pull crn and associated lab data together
     private void setModules()
     {
         string[] labs = usr.GetComponent<autofill>().getLabs(usr.transform.GetChild(0).GetComponent<Text>().text);
@@ -231,6 +249,7 @@ public class loginLogic : MonoBehaviour
             modulesTxt += (i+1) + ": " + labs[i] + "\n";
         }
         modules.transform.GetChild(2).GetComponent<Text>().text = modulesTxt;
+        print("Module Information set to:\n" + modulesTxt);
     }
 #endregion
 }

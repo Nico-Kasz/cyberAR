@@ -17,7 +17,7 @@ public class autofill : MonoBehaviour
     private List<string> names = new List<string>();
     private Text input;
     private string currText;
-    public Dropdown dropdown;  // Made public for now bc it isn't working as private
+    private Dropdown dropdown; 
     private int showing = 0;
     private List<User> users = new List<User>();
     private IDictionary<string, HashSet<string>> crnLabs;
@@ -34,14 +34,15 @@ public class autofill : MonoBehaviour
         refreshText();
 
 
-        // TESTING
+        // TESTING - Name bank to pull autofill from 
         // string[] nameslist = new string[] { "guest", "jim", "sam", "chad", "cronie", "crestin", "crestin2", "crestion", "crestolemu", "crester", "crestunker", "Michael", "Christopher", "Jessica", "Matthew", "Ashley", "Jennifer", "Joshua", "Amanda", "Daniel", "David", "James", "Robert", "John", "Joseph", "Andrew", "Ryan", "Brandon", "Jason", "Justin", "Sarah", "William", "Jonathan", "Stephanie", "Brian", "Nicole", "Nicholas", "Anthony", "Heather", "Eric", "Elizabeth", "Adam", "Megan", "Melissa", "Kevin", "Steven", "Thomas", "Timothy", "Christina", "Kyle", "Rachel", "Laura", "Lauren", "Amber", "Brittany", "Danielle", "Richard", "Kimberly", "Jeffrey", "Amy", "Crystal", "Michelle", "Tiffany", "Jeremy", "Benjamin", "Mark", "Emily", "Aaron", "Charles", "Rebecca", "Jacob", "Stephen", "Patrick", "Sean", "Erin", "Zachary", "Jamie", "Kelly", "Samantha", "Nathan", "Sara", "Dustin", "Paul", "Angela", "Tyler", "Scott", "Katherine", "Andrea", "Gregory", "Erica", "Mary", "Travis", "Lisa", "Kenneth", "Bryan", "Lindsey", "Kristen", "Jose", "Alexander", "Jesse", "Katie", "Lindsay", "Shannon", "Vanessa", "Courtney", "Christine", "Alicia", "Cody", "Allison", "Bradley", "Samuel", "Shawn", "April", "Derek", "Kathryn", "Kristin", "Chad", "Jenna", "Tara", "Maria", "Krystal", "Jared", "Anna", "Edward", "Julie", "Peter", "Holly", "Marcus", "Kristina", "Natalie", "Jordan", "Victoria", "Jacqueline", "Corey", "Keith", "Monica", "Juan", "Donald", "Cassandra", "Meghan", "Joel", "Shane", "Phillip", "Patricia", "Brett", "Ronald", "Catherine", "George", "Antonio", "Cynthia", "Stacy", "Kathleen", "Raymond", "Carlos", "Brandi", "Douglas", "Nathaniel", "Ian", "Craig", "Brandy", "Alex", "Valerie", "Veronica", "Cory", "Whitney", "Gary", "Derrick", "Philip", "Luis", "Diana", "Chelsea", "Leslie", "Caitlin", "Leah", "Natasha", "Erika", "Casey", "Latoya", "Erik", "Dana", "Victor", "Brent", "Dominique", "Frank", "Brittney", "Evan", "Gabriel", "Julia", "Candice", "Karen", "Melanie", "Adrian", "Stacey", "Margaret", "Sheena", "Wesley", "Vincent", "Alexandra", "Katrina", "Bethany", "Nichole", "Larry", "Jeffery", "Curtis", "Carrie", "Todd", "Blake", "Christian", "Randy", "Dennis", "Alison", "Trevor", "Seth", "Kara", "Joanna", "Rachael", "Luke", "Felicia", "Brooke", "Austin", "Candace", "Jasmine", "Jesus", "Alan", "Susan", "Sandra", "Tracy", "Kayla", "Nancy", "Tina", "Krystle", "Russell", "Jeremiah", "Carl"}; // TESTING
-        // foreach (string name in nameslist) { names.Add(name.ToLower()); }        // TESTING
+        // foreach (string name in nameslist) { names.Add(name.ToLower()); }    
         
         // building localized User databases
-        crnLabs = pullCSV(names); // ACTUAL IMPLEMENTATION - NOT WORKING ON LEAP
+        crnLabs = pullCSV(names); // NOT WORKING ON LEAP
         sort(names);
-        // printNames();
+
+        // Print out User and crn data to make sure everything is loading in properly 
         // foreach (string crn in crnLabs.Keys) { string outtie = ""; foreach (string str in getLabs(crn)) { outtie += str + " "; } print(outtie);  }
         foreach (User usr in users) { print(usr.ToString()); }
     }
@@ -69,13 +70,8 @@ public class autofill : MonoBehaviour
     public void refreshText()
     {
         currText = input.text;
-    }
+        showing = 0;
 
-    // Prints all names - Call Sort before calling this
-    public void printNames()
-    {
-        print("printing names");
-        foreach (string str in names) { print(str); }
     }
 
     // Authenticates given usr/pas - NOT TO BE STORED ON DEVICE LONGTERM
@@ -86,6 +82,7 @@ public class autofill : MonoBehaviour
             print("Authenticating as guest.");
             return true;
         }
+
         try {
             Debug.Log("Username: " + usr + ", Password: " + pas + "\n\t    Authenticated: " + (users.Find(x => x.usr.Equals(usr)).pas.Equals(pas)));
             return users.Find(x => x.usr.Equals(usr)).pas.Equals(pas);
@@ -101,9 +98,11 @@ public class autofill : MonoBehaviour
         // Helps refresh dropdown menu
         dropdown.Hide(); 
 
+
         if (input.text.Length >= len)
         {
-            dropdown.options.Clear();   // Ensures list is empty to start filling
+            // Empty list before adding elemnts
+            dropdown.options.Clear();   
             int count = 0;
 
             // Cycle names list and pick ones that contain provided string
@@ -121,6 +120,7 @@ public class autofill : MonoBehaviour
     }
 
     // Returns a sorted String Array of all labs associated with a CRN 
+    // Can only be called after the user is authenticated -> throws error if cant find CRN provided for authenticated user in Dictionary
     public string[] getLabs(string usr)
     {
         string crn = "0000000";  // Guest crn: seven 0s
@@ -152,8 +152,8 @@ public class autofill : MonoBehaviour
         string[] lines = System.IO.File.ReadAllLines(namesPath);
 
         // 0: username, 1: Name, 2: CRN, 3: Instructor, 4: Password
-        for (int i = 1; i < lines.Length; i++)
-        {
+        for (int i = 1; i < lines.Length; i++) // Skips labeling row
+        {  
             string[] columns = lines[i].Split(',');
             names.Add(columns[0]);
             users.Add(new User(columns[0], columns[4], columns[2]));
@@ -162,7 +162,7 @@ public class autofill : MonoBehaviour
         lines = System.IO.File.ReadAllLines(crnPath);
 
         // 0: CRN, 1+: Labs associated 
-        for (int i = 1; i < lines.Length; i++)
+        for (int i = 1; i < lines.Length; i++) // Skips labeling row
         {
             string[] columns = lines[i].Split(',');
             HashSet<string> hash = new HashSet<string>();
@@ -187,9 +187,7 @@ public class autofill : MonoBehaviour
 */
 class User 
 {
-    public string usr;
-    public string pas;
-    public string crn;
+    public string usr, pas, crn;
 
     public User(string usr, string pas, string crn)
     {
