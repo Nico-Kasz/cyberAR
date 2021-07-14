@@ -24,12 +24,12 @@ public class loginLogic : MonoBehaviour
     private bool placed = false; 
     private int currState = -1; 
     private enum state
-    {
+    { 
         placement,
         usr_entry,
         pass_entry,
         authentication,
-        modules, 
+        labs, 
         end_of_states
     }
     #endregion
@@ -85,7 +85,7 @@ public class loginLogic : MonoBehaviour
 
         switch (currState)  
         {
-            case 0: // Placement scene
+            case (int)state.placement: // Placement scene
                 {
                     // disable linerenderer and MTSU model to look cleaner
                     toggleLineRender(false);
@@ -148,7 +148,7 @@ public class loginLogic : MonoBehaviour
                     break;
                 }
 
-            case 4: // Modules
+            case 4: // Labs
                 {
                     // Disable UI and Keyboard 
                     LoginUI.SetActive(false);
@@ -156,7 +156,7 @@ public class loginLogic : MonoBehaviour
 
                     // Load Modules 
                     modules.SetActive(true);
-                    setModules();
+                    setLabs();
                     break;
                 }
 
@@ -231,7 +231,7 @@ public class loginLogic : MonoBehaviour
     // Calls script in autofill to authenticate based on usr/pas logged 
     private void authenticate(string usr, string pas) {
         if (this.usr.GetComponent<autofill>().authenticate(usr, pas))
-            gotoState((int)state.modules);
+            gotoState((int)state.labs);
         else
             gotoState((int)state.usr_entry);
         // One-line alternative
@@ -240,16 +240,18 @@ public class loginLogic : MonoBehaviour
 
     // Assigns a String to a Text Field on the Modules tab
     // NOT final implementation; just to pull crn and associated lab data together
-    private void setModules()
+    private void setLabs()
     {
+        // pull labs as a string list from autofill script using given username
+        //              dropdown          script        method              ( username text)
         string[] labs = usr.GetComponent<autofill>().getLabs(usr.transform.GetChild(0).GetComponent<Text>().text);
-        string modulesTxt = "";
+        string labsTxt = "";
         for (int i = 0; i < labs.Length; i++)
         {
-            modulesTxt += (i+1) + ": " + labs[i] + "\n";
+            labsTxt += (i+1) + ": " + labs[i] + "\n";
         }
-        modules.transform.GetChild(2).GetComponent<Text>().text = modulesTxt;
-        print("Module Information set to:\n" + modulesTxt);
+        modules.transform.GetChild(2).GetComponent<Text>().text = labsTxt;
+        print("Labs Information set to:\n" + labsTxt);
     }
 #endregion
 }
