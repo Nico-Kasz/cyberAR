@@ -39,7 +39,7 @@ public class autofill : MonoBehaviour
         // foreach (string name in nameslist) { names.Add(name.ToLower()); }    
         
         // building localized User databases
-        crnLabs = pullCSV(names); // NOT WORKING ON LEAP
+        crnLabs = pullCSV(); // NOT WORKING ON LEAP
         sort(names);
 
         // Print out User and crn data to make sure everything is loading in properly 
@@ -84,8 +84,11 @@ public class autofill : MonoBehaviour
         }
 
         try {
-            Debug.Log("Username: " + usr + ", Password: " + pas + "\n\t    Authenticated: " + (users.Find(x => x.usr.Equals(usr)).pas.Equals(pas)));
-            return users.Find(x => x.usr.Equals(usr)).pas.Equals(pas);
+            // Find User
+            User user = users.Find(x => x.usr.Equals(usr));
+            bool authenticated = user.pas.Equals(pas);
+            Debug.Log("Username: " + usr + ", Password: " + pas + "\n\t    Authenticated: " + authenticated);
+            return authenticated;
         } catch  {
             print("Authentication Failed: Invalid Username");
             return false;
@@ -142,7 +145,7 @@ public class autofill : MonoBehaviour
      * @param List<string> names: List that this method stores usernames in.
      * @return: Dictionary of crns with set of lab IDs.
      */
-    private IDictionary<string, HashSet<string>> pullCSV(List<string> names)
+    private IDictionary<string, HashSet<string>> pullCSV()
     {
         var result = new Dictionary<string, HashSet<string>>();
 

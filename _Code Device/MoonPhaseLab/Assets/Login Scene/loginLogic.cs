@@ -17,10 +17,13 @@ public class loginLogic : MonoBehaviour
     public GameObject placement_prop;
     public GameObject controller;
     public GameObject labs;
-    public GameObject guestButton; 
+    public GameObject guestButton;
+    public GameObject labTemp;
     #endregion
 
     #region Private Variables 
+    private List<GameObject> labList;
+    private string labSelected = "none";
     private bool placed = false; 
     private int currState = -1; 
     private enum state
@@ -166,6 +169,7 @@ public class loginLogic : MonoBehaviour
                 {
                     // Disable modules 
                     labs.SetActive(false);
+                    print(labSelected);
 
                     // Loop back to Start
                     gotoState(0);
@@ -243,15 +247,39 @@ public class loginLogic : MonoBehaviour
     private void setLabs()
     {
         // pull labs as a string list from autofill script using given username
-        //              username field    script        method               (username text)
+        //              username-field    script        method               (username text)
         string[] labs = usr.GetComponent<autofill>().getLabs(usr.transform.GetChild(0).GetComponent<Text>().text);
-        string labsTxt = "";
-        for (int i = 0; i < labs.Length; i++)
+
+        // Creates up to 6 lab options that you can choose from 
+        for (int i = 0; i < labs.Length && i < 6; i++)
         {
-            labsTxt += (i+1) + ": " + labs[i] + "\n";
+            // Create instance and position it
+            GameObject lab = Instantiate(labTemp,this.labs.transform);
+            lab.transform.position += new Vector3(.42f * (i % 2), -.15f * (i / 2), 0);
+
+            // Give each lab a unique value onClick
+            lab.GetComponent<Button>().onClick.AddListener( delegate() { setLab(labs[i]); }) ;
+            
+            // Set Lab Title, name, and visibility
+            lab.transform.GetChild(0).GetComponent<Text>().text = format(labs[i]);
+            lab.SetActive(true);
+            lab.name = "Lab: " + labs[i];
+            // labList.Add(lab);
         }
-        this.labs.transform.GetChild(2).GetComponent<Text>().text = labsTxt;
-        print("Labs Information set to:\n" + labsTxt);
     }
+
+    // Removes underscores and replaces them with spaces
+    private string format(string lab)
+    {
+        char[] chars = lab.ToCharArray();
+        for (int i = 0; i < chars.Length; i++)
+        {
+            if (chars[i] == '_') { chars[i] = ' '; }
+        }
+
+        return new string(chars);
+    }
+
+    public void setLab(string i) { print("Lab Selected: " + i); labSelected = i; next(); }
 #endregion
 }
