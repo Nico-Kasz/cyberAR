@@ -16,11 +16,6 @@ public class revolve : MonoBehaviour
 
     private float _angle;
 
-    private void Start()
-    {
-
-    }
-
     private void Update()
     {
 
