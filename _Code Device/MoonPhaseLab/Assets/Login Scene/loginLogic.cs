@@ -16,7 +16,7 @@ public class loginLogic : MonoBehaviour
     public GameObject anchor; 
     public GameObject placement_prop;
     public GameObject controller;
-    public GameObject modules;
+    public GameObject labs;
     public GameObject guestButton; 
     #endregion
 
@@ -155,7 +155,7 @@ public class loginLogic : MonoBehaviour
                     keyboard.SetActive(false);
 
                     // Load Modules 
-                    modules.SetActive(true);
+                    labs.SetActive(true);
                     setLabs();
                     break;
                 }
@@ -165,7 +165,7 @@ public class loginLogic : MonoBehaviour
             default:
                 {
                     // Disable modules 
-                    modules.SetActive(false);
+                    labs.SetActive(false);
 
                     // Loop back to Start
                     gotoState(0);
@@ -243,14 +243,14 @@ public class loginLogic : MonoBehaviour
     private void setLabs()
     {
         // pull labs as a string list from autofill script using given username
-        //              dropdown          script        method              ( username text)
+        //              username field    script        method               (username text)
         string[] labs = usr.GetComponent<autofill>().getLabs(usr.transform.GetChild(0).GetComponent<Text>().text);
         string labsTxt = "";
         for (int i = 0; i < labs.Length; i++)
         {
             labsTxt += (i+1) + ": " + labs[i] + "\n";
         }
-        modules.transform.GetChild(2).GetComponent<Text>().text = labsTxt;
+        this.labs.transform.GetChild(2).GetComponent<Text>().text = labsTxt;
         print("Labs Information set to:\n" + labsTxt);
     }
 #endregion

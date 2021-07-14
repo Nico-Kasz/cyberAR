@@ -43,7 +43,7 @@ public class autofill : MonoBehaviour
         sort(names);
 
         // Print out User and crn data to make sure everything is loading in properly 
-        // foreach (string crn in crnLabs.Keys) { string outtie = ""; foreach (string str in getLabs(crn)) { outtie += str + " "; } print(outtie);  }
+        // foreach (string crn in crnLabs.Keys) { string outtie = ""; foreach (string str in crnLabs[crn]) { outtie += str + " "; } print(outtie);  }
         foreach (User usr in users) { print(usr.ToString()); }
     }
 
@@ -167,7 +167,9 @@ public class autofill : MonoBehaviour
             string[] columns = lines[i].Split(',');
             HashSet<string> hash = new HashSet<string>();
             for (int j = 1; j < columns.Length; j++) { hash.Add(columns[j]); }
-            result.Add(columns[0], hash);
+            try{ result.Add(columns[0], hash); }
+            catch {foreach (string str in hash) { result[columns[0]].Add(str); } }
+            
         }
 
         return result;
