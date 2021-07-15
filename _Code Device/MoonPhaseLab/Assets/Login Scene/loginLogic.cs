@@ -23,8 +23,10 @@ public class loginLogic : MonoBehaviour
 
     #region Private Variables 
     private List<GameObject> labList;
+    Dictionary<string, string> labOptions;
     private string labSelected = "none";
-    private bool placed = false; 
+    private bool placed = false;
+    private bool playAnimation = true;
     private int currState = -1; 
     private enum state
     { 
@@ -32,7 +34,8 @@ public class loginLogic : MonoBehaviour
         usr_entry,
         pass_entry,
         authentication,
-        labs, 
+        lab_selection, 
+        lab_initiation,
         end_of_states
     }
     #endregion
@@ -41,6 +44,7 @@ public class loginLogic : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        labList = new List<GameObject>();
         intro.SetActive(true);
         StartCoroutine(DownloadFile("http://cyberlearnar.cs.mtsu.edu/show_uploaded/test_names.csv","Assets/Login Scene/csv bank/test_names.csv"));
         StartCoroutine(DownloadFile("http://cyberlearnar.cs.mtsu.edu/show_uploaded/crn_to_labs.csv","Assets/Login Scene/csv bank/crn_to_labs.csv"));
@@ -56,8 +60,12 @@ public class loginLogic : MonoBehaviour
             toggleLineRender(false);
 
         // After initial animation, this will initiate placement scene, then the login screen 
-        if (intro.gameObject.transform.GetChild(0).GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+        if (playAnimation && intro.gameObject.transform.GetChild(0).GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle"))
         {
+            // prevents update from checking if intro is playing every frame
+            playAnimation = false;
+
+            // starts the rest of events in motion
             print("Animation at idle; starting placement scene. :)");
             next();
         }
@@ -94,13 +102,16 @@ public class loginLogic : MonoBehaviour
                     toggleLineRender(false);
                     intro.gameObject.transform.GetChild(0).gameObject.SetActive(false);
 
+                    // Destroy Lab Selection Options if looped through to beginning - MOVEABLE
+                    foreach (GameObject o in labList) { Destroy(o); }
+
                     // Start placement scene and ensure it hasn't already been anchored before it started 
                     placement_prop.SetActive(true);
                     placed = false;
                     break;
                 }
 
-            case 1: // User Entry
+            case (int)state.usr_entry: // User Entry
                 {
                     // Cleanup placement object
                     toggleLineRender(true);
@@ -120,7 +131,7 @@ public class loginLogic : MonoBehaviour
                     break;
                 }
 
-            case 2: // Pass Entry
+            case (int)state.pass_entry: // Pass Entry
                 {
                     // Disable User entry
                     usr.SetActive(false);
@@ -133,7 +144,7 @@ public class loginLogic : MonoBehaviour
                     break;
                 }
 
-            case 3: // Authentication
+            case (int)state.authentication: // Authentication
                 {
                     // Cleanup in-case authentication fails
                     usr.GetComponent<autofill>().refreshText();
@@ -151,7 +162,7 @@ public class loginLogic : MonoBehaviour
                     break;
                 }
 
-            case 4: // Labs
+            case (int)state.lab_selection: // Lab selection
                 {
                     // Disable UI and Keyboard 
                     LoginUI.SetActive(false);
@@ -160,6 +171,17 @@ public class loginLogic : MonoBehaviour
                     // Load Modules 
                     labs.SetActive(true);
                     setLabs();
+                    break;
+                }
+
+            case (int)state.lab_initiation: // Insantiate lab 
+                {
+                    // Disable all UI
+                    labs.SetActive(false);
+
+                    // Start Lab Manager
+                    print("Lab selected: " + labSelected + ", but no info to load for now :^)");
+                    startLab(labSelected);
                     break;
                 }
 
@@ -235,36 +257,40 @@ public class loginLogic : MonoBehaviour
     // Calls script in autofill to authenticate based on usr/pas logged 
     private void authenticate(string usr, string pas) {
         if (this.usr.GetComponent<autofill>().authenticate(usr, pas))
-            gotoState((int)state.labs);
+            gotoState((int)state.lab_selection);
         else
             gotoState((int)state.usr_entry);
+
         // One-line alternative
         // gotoState((int)(this.usr.GetComponent<autofill>().authenticate(usr, pas)) ? state.modules : state.usr_entry);
     }
 
-    // Assigns a String to a Text Field on the Modules tab
-    // NOT final implementation; just to pull crn and associated lab data together
+    // Instantiates UP TO 6 lab options that are clickable and load 
     private void setLabs()
     {
         // pull labs as a string list from autofill script using given username
         //              username-field    script        method               (username text)
-        string[] labs = usr.GetComponent<autofill>().getLabs(usr.transform.GetChild(0).GetComponent<Text>().text);
+        labOptions = usr.GetComponent<autofill>().getLabs(usr.transform.GetChild(0).GetComponent<Text>().text);
 
-        // Creates up to 6 lab options that you can choose from 
-        for (int i = 0; i < labs.Length && i < 6; i++)
+        int count = 0;
+        foreach (string lab in labOptions.Keys)
         {
             // Create instance and position it
-            GameObject lab = Instantiate(labTemp,this.labs.transform);
-            lab.transform.position += new Vector3(.42f * (i % 2), -.15f * (i / 2), 0);
+            GameObject newlab = Instantiate(labTemp, this.labs.transform);
+            newlab.transform.position += new Vector3(.42f * (count % 2), -.15f * (count / 2), 0);
 
             // Give each lab a unique value onClick
-            lab.GetComponent<Button>().onClick.AddListener( delegate() { setLab(labs[i]); }) ;
-            
-            // Set Lab Title, name, and visibility
-            lab.transform.GetChild(0).GetComponent<Text>().text = format(labs[i]);
-            lab.SetActive(true);
-            lab.name = "Lab: " + labs[i];
-            // labList.Add(lab);
+            newlab.GetComponent<Button>().onClick.AddListener(delegate () { setLab(lab); });
+
+            // Set Lab Title, description, name, and visibility
+            newlab.transform.GetChild(0).GetComponent<Text>().text = format(lab);
+            newlab.transform.GetChild(1).GetComponent<Text>().text = getDesc(labOptions[lab]);
+            newlab.name = "Lab: " + lab;
+            newlab.SetActive(true);
+
+            // Keep track of Labs to destroy them later if needed 
+            labList.Add(newlab);
+            if (++count == 6) break;
         }
     }
 
@@ -280,6 +306,33 @@ public class loginLogic : MonoBehaviour
         return new string(chars);
     }
 
-    public void setLab(string i) { print("Lab Selected: " + i); labSelected = i; next(); }
+    // Returns lab description as a string  TODO
+    private string getDesc(string jsonUrl)
+    {
+        // string temp = jsonUrl.Substring(jsonUrl.indexOf("Description: {"));
+        // return jsonUrl.Substring(temp, temp.indexOf("}"));
+        return jsonUrl;
+    }
+
+    // Called when a lab is clicked on; sets value of (string) labSelected
+    private void setLab(string lab) 
+    {
+        labSelected = lab;
+        Debug.Log("Lab Selected: " + format(labSelected));
+        next();
+    }
+
+    // Instantiates the lab selected
+    private void startLab(string lab)
+    {
+        // If exit is selected from the list, End program here
+        // if (labSelected.Equals("Exit")) { Application.Quit(); }
+        // else if (labSelected.Equals("none")) { gotoState((int)lab_selection); }
+
+        var manifestPath = "http://cyberlearnar.cs.mtsu.edu/lab_manifest/"+lab;
+        var jsonPath = labOptions[lab]; 
+        // GameObject.Find("LabManager").GetComponent<LabManagerScript>().startLab(manifestPath,jsonPath);
+    }
+
 #endregion
 }
