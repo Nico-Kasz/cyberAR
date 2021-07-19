@@ -44,8 +44,11 @@ public class autofill : MonoBehaviour
 
         // Print out User and crn data to make sure everything is loading in properly 
         // foreach (string crn in crnLabs.Keys) { string outtie = ""; foreach (string str in crnLabs[crn]) { outtie += str + " "; } print(outtie);  }
+        
+        // Prints each user with crn and password for testing
         foreach (User usr in users) { print(usr.ToString()); }
     }
+
 
     // Update is called once per frame
     void Update()
@@ -65,6 +68,7 @@ public class autofill : MonoBehaviour
         }
     }
 
+
     #region Public Methods 
     // helps re-adjust dropdown options if authentication fails
     public void refreshText()
@@ -73,6 +77,7 @@ public class autofill : MonoBehaviour
         showing = 0;
 
     }
+
 
     // Authenticates given usr/pas - NOT TO BE STORED ON DEVICE LONGTERM
     public bool authenticate(string usr, string pas)
@@ -94,6 +99,7 @@ public class autofill : MonoBehaviour
             return false;
         }
     }
+
 
     // Called when textbox is changed: checks if enough letters are typed before giving up to a set limit of possible usernames
     public void updateDropdown()
@@ -122,23 +128,29 @@ public class autofill : MonoBehaviour
 
     }
 
+
     // Returns a Dictionary of <string lab, string jsonURL>
     // Can only be called after the user is authenticated -> throws error if cant find CRN provided for authenticated user in Dictionary
     public Dictionary<string,string> getLabs(string usr)
     {
         string crn = "0000000";  // Guest crn: seven 0s
-        try { crn = users.Find(x => x.usr.Equals(usr)).crn; }
-        catch { Debug.Log("CSV not loaded, or forced next();"); }
+        try { 
+            crn = users.Find(x => x.usr.Equals(usr)).crn; 
+        } catch 
+        { 
+            Debug.Log("CSV not loaded, or forced next();");
+        }
 
         try { 
             return crnLabsUrl[crn]; 
         } catch 
         { 
             print("CRN Dictionary is missing, returning a blank dicitonary"); 
-            return new Dictionary<string, string>(); 
+            return new Dictionary<string, string>(){ { "guest","default_json_url"} }; 
         }
     }
     #endregion
+
 
     #region Private Methods 
     /* Loads names into a list, Username+Password+CRN into a list of UserObjects, and CRN + Hashset<labs> in a dictionary.
@@ -182,18 +194,31 @@ public class autofill : MonoBehaviour
                 {
                     tempDic.Add(columns[j], columns[++j]);
                 }
-            } catch { Debug.Log("crn " + columns[0] + " has an incomplete crn/jsonpath pair."); }
+            } 
+            catch 
+            { 
+                Debug.Log("crn " + columns[0] + " has an incomplete crn/jsonpath pair.");
+            }
 
             // Prints CRN with associated dictionary values. If there are multiple lines dedicated to the same crn, they will print on different lines 
+            // written on one line for quick toggling 
             string strs = ""; foreach (string s in tempDic.Keys) { strs += "Lab: " + s + "\t url: " + tempDic[s] + "\n"; } print(strs);
 
             // Adds crn and Lab/json to dictionary unless it exists => adds to existing
-            try { result.Add(columns[0], tempDic); }
-            catch { foreach (string str in tempDic.Keys) { result[columns[0]].Add(str, tempDic[str]); } }
+            try { 
+                result.Add(columns[0], tempDic);
+            }
+            catch {
+                foreach (string str in tempDic.Keys) 
+                { 
+                    result[columns[0]].Add(str, tempDic[str]); 
+                } 
+            }
         }
 
         return result;
     }
+
 
     // Sorts names in the autofilled list
     private void sort(List<string> names)
@@ -203,6 +228,7 @@ public class autofill : MonoBehaviour
     }
     #endregion
 }
+
 
 /* Used to store Student Usernames, Passwords, and CRNs as of now 
  * All objects are added to a list where they can be searched

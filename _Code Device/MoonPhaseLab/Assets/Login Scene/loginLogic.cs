@@ -180,8 +180,8 @@ public class loginLogic : MonoBehaviour
                     labs.SetActive(false);
 
                     // Start Lab Manager
-                    print("Lab selected: " + labSelected + ", but no info to load for now :^)");
-                    startLab(labSelected);
+                    print("Lab selected: " + format(labSelected) + ", but no info to load for now :^)");
+                    startLab();
                     break;
                 }
 
@@ -283,16 +283,33 @@ public class loginLogic : MonoBehaviour
             newlab.GetComponent<Button>().onClick.AddListener(delegate () { setLab(lab); });
 
             // Set Lab Title, description, name, and visibility
-            newlab.transform.GetChild(0).GetComponent<Text>().text = format(lab);
+            newlab.transform.GetChild(0).GetComponent<Text>().text = format(lab); //format doesn't work here but it really doesn't matter
             newlab.transform.GetChild(1).GetComponent<Text>().text = getDesc(labOptions[lab]);
             newlab.name = "Lab: " + lab;
             newlab.SetActive(true);
 
             // Keep track of Labs to destroy them later if needed 
             labList.Add(newlab);
-            if (++count == 6) break;
+            if (++count == 5) break;
         }
+
+        // Add Exit button in lab selection
+        GameObject exitLab = Instantiate(labTemp, this.labs.transform);
+        exitLab.transform.position += new Vector3(.42f * (count % 2), -.15f * (count / 2), 0);
+
+        // Give each lab a unique value onClick
+        exitLab.GetComponent<Button>().onClick.AddListener(delegate () { setLab("Exit"); });
+
+        // Set Lab Title, description, name, and visibility
+        exitLab.transform.GetChild(0).GetComponent<Text>().text = "Exit";
+        exitLab.transform.GetChild(1).GetComponent<Text>().text = "Closes program and sends data back to server";
+        exitLab.name = "Exit tab";
+        exitLab.SetActive(true);
+
+        // Keep track of Labs to destroy them later if needed 
+        labList.Add(exitLab);
     }
+
 
     // Removes underscores and replaces them with spaces
     private string format(string lab)
@@ -302,7 +319,6 @@ public class loginLogic : MonoBehaviour
         {
             if (chars[i] == '_') { chars[i] = ' '; }
         }
-
         return new string(chars);
     }
 
@@ -314,25 +330,26 @@ public class loginLogic : MonoBehaviour
         return jsonUrl;
     }
 
+
     // Called when a lab is clicked on; sets value of (string) labSelected
     private void setLab(string lab) 
     {
         labSelected = lab;
-        Debug.Log("Lab Selected: " + format(labSelected));
+        print("Lab Selected: " + format(labSelected));
         next();
     }
 
+
     // Instantiates the lab selected
-    private void startLab(string lab)
+    private void startLab()
     {
         // If exit is selected from the list, End program here
-        // if (labSelected.Equals("Exit")) { Application.Quit(); }
-        // else if (labSelected.Equals("none")) { gotoState((int)lab_selection); }
+        // if (labSelected.Equals("Exit")) { Application.Quit(); return; }                          // Currently doesn't kill app
+        // else if (labSelected.Equals("none")) { gotoState((int)state.lab_selection); }
 
-        var manifestPath = "http://cyberlearnar.cs.mtsu.edu/lab_manifest/"+lab;
-        var jsonPath = labOptions[lab]; 
+        var manifestPath = "http://cyberlearnar.cs.mtsu.edu/lab_manifest/" + labSelected;
+        var jsonPath = labOptions[labSelected];
         // GameObject.Find("LabManager").GetComponent<LabManagerScript>().startLab(manifestPath,jsonPath);
     }
-
 #endregion
 }

@@ -15,13 +15,15 @@ public class revolve : MonoBehaviour
     public float Radius = 0.1f;
 
     private float _angle;
+    private Vector3 scale;
 
+    private void Start() { scale = transform.parent.localScale; }
     private void Update()
     {
 
         _angle += RotateSpeed * Time.deltaTime;
 
-        var offset = new Vector3(Mathf.Cos(_angle), 0, Mathf.Sin(_angle)) * Radius;
+        var offset = new Vector3(Mathf.Cos(_angle) * scale.x, 0, Mathf.Sin(_angle) * scale.z) * Radius;
         transform.position = transform.parent.gameObject.transform.position + offset;
     }
 
