@@ -51,6 +51,7 @@ public class loginLogic : MonoBehaviour
         toggleLineRender(false);
     }
 
+
     // Update is called once per frame
     void Update()
     {
@@ -89,6 +90,7 @@ public class loginLogic : MonoBehaviour
         GameObject.Find("Starfield").transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, 0);
     }
 
+
     // Keep the flow of events involving the Login UI
     public void next()
     {
@@ -96,7 +98,7 @@ public class loginLogic : MonoBehaviour
 
         switch (currState)  
         {
-            case (int)state.placement: // Placement scene
+            case (int)state.placement: // Placement scene: 0
                 {
                     // disable linerenderer and MTSU model to look cleaner
                     toggleLineRender(false);
@@ -111,7 +113,7 @@ public class loginLogic : MonoBehaviour
                     break;
                 }
 
-            case (int)state.usr_entry: // User Entry
+            case (int)state.usr_entry: // User Entry: 1
                 {
                     // Cleanup placement object
                     toggleLineRender(true);
@@ -131,7 +133,7 @@ public class loginLogic : MonoBehaviour
                     break;
                 }
 
-            case (int)state.pass_entry: // Pass Entry
+            case (int)state.pass_entry: // Pass Entry: 2
                 {
                     // Disable User entry
                     usr.SetActive(false);
@@ -144,7 +146,7 @@ public class loginLogic : MonoBehaviour
                     break;
                 }
 
-            case (int)state.authentication: // Authentication
+            case (int)state.authentication: // Authentication: 3
                 {
                     // Cleanup in-case authentication fails
                     usr.GetComponent<autofill>().refreshText();
@@ -162,7 +164,7 @@ public class loginLogic : MonoBehaviour
                     break;
                 }
 
-            case (int)state.lab_selection: // Lab selection
+            case (int)state.lab_selection: // Lab selection: 4
                 {
                     // Disable UI and Keyboard 
                     LoginUI.SetActive(false);
@@ -174,7 +176,7 @@ public class loginLogic : MonoBehaviour
                     break;
                 }
 
-            case (int)state.lab_initiation: // Insantiate lab 
+            case (int)state.lab_initiation: // Insantiate lab: 5
                 {
                     // Disable all UI
                     labs.SetActive(false);
@@ -189,7 +191,7 @@ public class loginLogic : MonoBehaviour
                 // returns back to placement scene
             default:
                 {
-                    // Disable modules 
+                    // Disable lab selection
                     labs.SetActive(false);
                     print(labSelected);
 
@@ -199,6 +201,7 @@ public class loginLogic : MonoBehaviour
                 }
         }
     }
+
 
     // Anchors scene to location of controller 
     public void place()
@@ -210,6 +213,7 @@ public class loginLogic : MonoBehaviour
             next();
         }
     }
+
 
     // Called to automatically log in as "guest"
     public void guestLogin()
@@ -239,6 +243,7 @@ public class loginLogic : MonoBehaviour
             Debug.Log("File successfully downloaded and saved to " + path);
     }
 
+
     // Toggles line renderer emitted from controller
     private void toggleLineRender(bool flag)
     {
@@ -247,12 +252,14 @@ public class loginLogic : MonoBehaviour
         controller.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = flag;
     }
 
+
     // Called to change state if the state requested cannot be reached calling next();
     private void gotoState(int state)
     {
         currState = state-1;  
         next();
     }
+
 
     // Calls script in autofill to authenticate based on usr/pas logged 
     private void authenticate(string usr, string pas) {
@@ -264,6 +271,7 @@ public class loginLogic : MonoBehaviour
         // One-line alternative
         // gotoState((int)(this.usr.GetComponent<autofill>().authenticate(usr, pas)) ? state.modules : state.usr_entry);
     }
+
 
     // Instantiates UP TO 6 lab options that are clickable and load 
     private void setLabs()
@@ -321,6 +329,7 @@ public class loginLogic : MonoBehaviour
         }
         return new string(chars);
     }
+
 
     // Returns lab description as a string  TODO
     private string getDesc(string jsonUrl)
