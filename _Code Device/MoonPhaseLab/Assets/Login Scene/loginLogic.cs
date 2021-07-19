@@ -41,11 +41,13 @@ public class loginLogic : MonoBehaviour
     #endregion
 
     #region MonoBehaviour
+
     // Start is called before the first frame update
     void Start()
     {
         labList = new List<GameObject>();
         intro.SetActive(true);
+        intro.transform.position = Camera.main.transform.position + Camera.main.transform.rotation * new Vector3(0,0,5); // DOESNT WORK :( 
         StartCoroutine(DownloadFile("http://cyberlearnar.cs.mtsu.edu/show_uploaded/test_names.csv","Assets/Login Scene/csv bank/test_names.csv"));
         StartCoroutine(DownloadFile("http://cyberlearnar.cs.mtsu.edu/show_uploaded/crn_to_labs.csv","Assets/Login Scene/csv bank/crn_to_labs.csv"));
         toggleLineRender(false);
@@ -67,9 +69,10 @@ public class loginLogic : MonoBehaviour
             playAnimation = false;
 
             // starts the rest of events in motion
-            print("Animation at idle; starting placement scene. :)");
+            print("Animation at idle; starting placement scene. :)\n");
             next();
         }
+
         if (placement_prop.active && !placed)
         {
             anchor.transform.position = controller.transform.position; // + new Vector3(0, .5f, 0); 
@@ -85,9 +88,12 @@ public class loginLogic : MonoBehaviour
         print("Realigning UI.");
         anchor.transform.position = controller.transform.position;
         anchor.transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, 0);
+        // Alternative to align closer to the body 
+        // anchor.transform.position = new Vector3((controller.transform.position.x + Camera.main.transform.position.x)/2, controller.transform.position.y,(controller.transform.position.x + Camera.main.transform.position.x)/2);
 
         // change orientation of starfield
-        GameObject.Find("Starfield").transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, 0);
+        // **Starfield disabled for now due to incapatibility**
+        // GameObject.Find("Starfield").transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, 0);
     }
 
 
@@ -121,7 +127,7 @@ public class loginLogic : MonoBehaviour
 
                     // Cleanup failed authentication
                     loading.SetActive(false);
-                    print("clearing usernames");
+                    print("clearing usernames\n");
                     usr.GetComponent<Dropdown>().options.Clear();
 
                     // Start UI
@@ -182,7 +188,7 @@ public class loginLogic : MonoBehaviour
                     labs.SetActive(false);
 
                     // Start Lab Manager
-                    print("Lab selected: " + format(labSelected) + ", but no info to load for now :^)");
+                    print("Lab selected: " + format(labSelected) + ", but no info to load for now :^)\n");
                     startLab();
                     break;
                 }
@@ -209,8 +215,9 @@ public class loginLogic : MonoBehaviour
         // Ensures that prop isn't anchored before the placement scene
         if (placement_prop.active && !placed)
         {
+            print("Scene has been placed\n");
             placed = true;
-            next();
+            next(); 
         }
     }
 
@@ -240,7 +247,7 @@ public class loginLogic : MonoBehaviour
         if (uwr.result != UnityWebRequest.Result.Success)
             Debug.LogError(uwr.error);
         else
-            Debug.Log("File successfully downloaded and saved to " + path);
+            Debug.Log("File successfully downloaded and saved to " + path + "\n");
     }
 
 
@@ -344,7 +351,7 @@ public class loginLogic : MonoBehaviour
     private void setLab(string lab) 
     {
         labSelected = lab;
-        print("Lab Selected: " + format(labSelected));
+        print("Lab Selected: " + format(labSelected) + "\n");
         next();
     }
 
@@ -353,12 +360,26 @@ public class loginLogic : MonoBehaviour
     private void startLab()
     {
         // If exit is selected from the list, End program here
-        // if (labSelected.Equals("Exit")) { Application.Quit(); return; }                          // Currently doesn't kill app
-        // else if (labSelected.Equals("none")) { gotoState((int)state.lab_selection); }
+        if (labSelected.ToUpper().Equals("EXIT")) 
+        {
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();
+        #endif
+        } 
 
-        var manifestPath = "http://cyberlearnar.cs.mtsu.edu/lab_manifest/" + labSelected;
-        var jsonPath = labOptions[labSelected];
-        // GameObject.Find("LabManager").GetComponent<LabManagerScript>().startLab(manifestPath,jsonPath);
+        else if (labSelected.Equals("none")) 
+        { 
+            gotoState((int)state.lab_selection); 
+        }
+
+        else
+        {
+            var manifestPath = "http://cyberlearnar.cs.mtsu.edu/lab_manifest/" + labSelected;
+            var jsonPath = labOptions[labSelected];
+            // GameObject.Find("LabManager").GetComponent<LabManagerScript>().startLab(manifestPath,jsonPath);
+        }
     }
 #endregion
 }

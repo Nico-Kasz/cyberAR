@@ -37,6 +37,7 @@ public class autofill : MonoBehaviour
         // TESTING - Name bank to pull autofill from 
         // string[] nameslist = new string[] { "guest", "jim", "sam", "chad", "cronie", "crestin", "crestin2", "crestion", "crestolemu", "crester", "crestunker", "Michael", "Christopher", "Jessica", "Matthew", "Ashley", "Jennifer", "Joshua", "Amanda", "Daniel", "David", "James", "Robert", "John", "Joseph", "Andrew", "Ryan", "Brandon", "Jason", "Justin", "Sarah", "William", "Jonathan", "Stephanie", "Brian", "Nicole", "Nicholas", "Anthony", "Heather", "Eric", "Elizabeth", "Adam", "Megan", "Melissa", "Kevin", "Steven", "Thomas", "Timothy", "Christina", "Kyle", "Rachel", "Laura", "Lauren", "Amber", "Brittany", "Danielle", "Richard", "Kimberly", "Jeffrey", "Amy", "Crystal", "Michelle", "Tiffany", "Jeremy", "Benjamin", "Mark", "Emily", "Aaron", "Charles", "Rebecca", "Jacob", "Stephen", "Patrick", "Sean", "Erin", "Zachary", "Jamie", "Kelly", "Samantha", "Nathan", "Sara", "Dustin", "Paul", "Angela", "Tyler", "Scott", "Katherine", "Andrea", "Gregory", "Erica", "Mary", "Travis", "Lisa", "Kenneth", "Bryan", "Lindsey", "Kristen", "Jose", "Alexander", "Jesse", "Katie", "Lindsay", "Shannon", "Vanessa", "Courtney", "Christine", "Alicia", "Cody", "Allison", "Bradley", "Samuel", "Shawn", "April", "Derek", "Kathryn", "Kristin", "Chad", "Jenna", "Tara", "Maria", "Krystal", "Jared", "Anna", "Edward", "Julie", "Peter", "Holly", "Marcus", "Kristina", "Natalie", "Jordan", "Victoria", "Jacqueline", "Corey", "Keith", "Monica", "Juan", "Donald", "Cassandra", "Meghan", "Joel", "Shane", "Phillip", "Patricia", "Brett", "Ronald", "Catherine", "George", "Antonio", "Cynthia", "Stacy", "Kathleen", "Raymond", "Carlos", "Brandi", "Douglas", "Nathaniel", "Ian", "Craig", "Brandy", "Alex", "Valerie", "Veronica", "Cory", "Whitney", "Gary", "Derrick", "Philip", "Luis", "Diana", "Chelsea", "Leslie", "Caitlin", "Leah", "Natasha", "Erika", "Casey", "Latoya", "Erik", "Dana", "Victor", "Brent", "Dominique", "Frank", "Brittney", "Evan", "Gabriel", "Julia", "Candice", "Karen", "Melanie", "Adrian", "Stacey", "Margaret", "Sheena", "Wesley", "Vincent", "Alexandra", "Katrina", "Bethany", "Nichole", "Larry", "Jeffery", "Curtis", "Carrie", "Todd", "Blake", "Christian", "Randy", "Dennis", "Alison", "Trevor", "Seth", "Kara", "Joanna", "Rachael", "Luke", "Felicia", "Brooke", "Austin", "Candace", "Jasmine", "Jesus", "Alan", "Susan", "Sandra", "Tracy", "Kayla", "Nancy", "Tina", "Krystle", "Russell", "Jeremiah", "Carl"}; // TESTING
         // foreach (string name in nameslist) { names.Add(name.ToLower()); }    
+        names.Add("guest"); users.Add(new User("guest","guest","0000000")); crnLabsUrl = new Dictionary<string, Dictionary<string, string>>() {{"0000000",new Dictionary<string, string>() {{"guest_Lab","www.guestLab.json/url"}}}};
 
         // building localized User databases
         crnLabsUrl = pullCSV(); // NOT WORKING ON LEAP
@@ -46,7 +47,7 @@ public class autofill : MonoBehaviour
         // foreach (string crn in crnLabs.Keys) { string outtie = ""; foreach (string str in crnLabs[crn]) { outtie += str + " "; } print(outtie);  }
         
         // Prints each user with crn and password for testing
-        foreach (User usr in users) { print(usr.ToString()); }
+        // foreach (User usr in users) { print(usr.ToString()); }
     }
 
 
@@ -82,15 +83,11 @@ public class autofill : MonoBehaviour
     // Authenticates given usr/pas - NOT TO BE STORED ON DEVICE LONGTERM
     public bool authenticate(string usr, string pas)
     {
-        if (usr.Equals("guest")) // TESTING - not final implementation
-        {
-            print("Authenticating as guest.");
-            return true;
-        }
-
         try {
             // Find User
             User user = users.Find(x => x.usr.Equals(usr));
+
+            // Check if pass is correct
             bool authenticated = user.pas.Equals(pas);
             Debug.Log("Username: " + usr + ", Password: " + pas + "\n\t    Authenticated: " + authenticated);
             return authenticated;
@@ -154,7 +151,6 @@ public class autofill : MonoBehaviour
 
     #region Private Methods 
     /* Loads names into a list, Username+Password+CRN into a list of UserObjects, and CRN + Hashset<labs> in a dictionary.
-     * @param List<string> names: List that this method stores usernames in.
      * @return: Dictionary of crns with set of lab IDs.
      */
     private Dictionary<string, Dictionary<string, string>> pullCSV()
@@ -202,7 +198,7 @@ public class autofill : MonoBehaviour
 
             // Prints CRN with associated dictionary values. If there are multiple lines dedicated to the same crn, they will print on different lines 
             // written on one line for quick toggling 
-            string strs = ""; foreach (string s in tempDic.Keys) { strs += "Lab: " + s + "\t url: " + tempDic[s] + "\n"; } print(strs);
+            // string strs = ""; foreach (string s in tempDic.Keys) { strs += "Lab: " + s + "\t url: " + tempDic[s] + "\n"; } print(strs);
 
             // Adds crn and Lab/json to dictionary unless it exists => adds to existing
             try { 
