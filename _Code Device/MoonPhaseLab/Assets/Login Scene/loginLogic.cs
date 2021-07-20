@@ -27,6 +27,7 @@ public class loginLogic : MonoBehaviour
     private string labSelected = "none";
     private bool placed = false;
     private bool playAnimation = true;
+    private bool setAnimationAnchor = true;
     private int currState = -1; 
     private enum state
     { 
@@ -46,8 +47,6 @@ public class loginLogic : MonoBehaviour
     void Start()
     {
         labList = new List<GameObject>();
-        intro.SetActive(true);
-        intro.transform.position = Camera.main.transform.position + Camera.main.transform.rotation * new Vector3(0,0,5); // DOESNT WORK :( 
         StartCoroutine(DownloadFile("http://cyberlearnar.cs.mtsu.edu/show_uploaded/test_names.csv","Assets/Login Scene/csv bank/test_names.csv"));
         StartCoroutine(DownloadFile("http://cyberlearnar.cs.mtsu.edu/show_uploaded/crn_to_labs.csv","Assets/Login Scene/csv bank/crn_to_labs.csv"));
         toggleLineRender(false);
@@ -57,13 +56,19 @@ public class loginLogic : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // disable line renderer in startup animation
-        // Might cuase lag due to being checked every update
-        if (currState == -1) 
+        // After Start, sets intro position 
+        if (setAnimationAnchor && Camera.main.transform.position != new Vector3(0, 0, 0)) // This took longer than it should've to come up with
+        {
+            intro.transform.position = Camera.main.transform.position + Camera.main.transform.rotation * new Vector3(0, 0, 5); 
+            intro.transform.rotation = Camera.main.transform.rotation;
+            intro.SetActive(true);
+            setAnimationAnchor = false;
             toggleLineRender(false);
+        }
 
         // After initial animation, this will initiate placement scene, then the login screen 
-        if (playAnimation && intro.gameObject.transform.GetChild(0).GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+        // intro.active throws warning, but don't trust the stinky computer
+        if (playAnimation && intro.active && intro.gameObject.transform.GetChild(0).GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle"))
         {
             // prevents update from checking if intro is playing every frame
             playAnimation = false;
@@ -75,8 +80,9 @@ public class loginLogic : MonoBehaviour
 
         if (placement_prop.active && !placed)
         {
-            anchor.transform.position = controller.transform.position; // + new Vector3(0, .5f, 0); 
-            // anchor.transform.eulerAngles = new Vector3(0, controller.transform.eulerAngles.y, 0);  // I Disabled this after adding simple rotation to it 
+            // Same as realign()
+            anchor.transform.position = controller.transform.position;
+            anchor.transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, 0);
         } 
     }
     #endregion
@@ -188,7 +194,6 @@ public class loginLogic : MonoBehaviour
                     labs.SetActive(false);
 
                     // Start Lab Manager
-                    print("Lab selected: " + format(labSelected) + ", but no info to load for now :^)\n");
                     startLab();
                     break;
                 }
@@ -283,48 +288,39 @@ public class loginLogic : MonoBehaviour
     // Instantiates UP TO 6 lab options that are clickable and load 
     private void setLabs()
     {
-        // pull labs as a string list from autofill script using given username
+        // pull labs as a Dictionary <string lab_name, string jsonUrl> 
         //              username-field    script        method               (username text)
         labOptions = usr.GetComponent<autofill>().getLabs(usr.transform.GetChild(0).GetComponent<Text>().text);
 
+        // Loop through labs pulling up to 5 of them and instantiating an interface to pick one
         int count = 0;
         foreach (string lab in labOptions.Keys)
         {
-            // Create instance and position it
-            GameObject newlab = Instantiate(labTemp, this.labs.transform);
-            newlab.transform.position += new Vector3(.42f * (count % 2), -.15f * (count / 2), 0);
-
-            // Give each lab a unique value onClick
-            newlab.GetComponent<Button>().onClick.AddListener(delegate () { setLab(lab); });
-
-            // Set Lab Title, description, name, and visibility
-            newlab.transform.GetChild(0).GetComponent<Text>().text = format(lab); //format doesn't work here but it really doesn't matter
-            newlab.transform.GetChild(1).GetComponent<Text>().text = getDesc(labOptions[lab]);
-            newlab.name = "Lab: " + lab;
-            newlab.SetActive(true);
-
-            // Keep track of Labs to destroy them later if needed 
-            labList.Add(newlab);
-            if (++count == 5) break;
+            labList.Add(createLab(lab, getDesc(labOptions[lab]), count++));
+            if (count == 5) { break; }
         }
 
-        // Add Exit button in lab selection
-        GameObject exitLab = Instantiate(labTemp, this.labs.transform);
-        exitLab.transform.position += new Vector3(.42f * (count % 2), -.15f * (count / 2), 0);
-
-        // Give each lab a unique value onClick
-        exitLab.GetComponent<Button>().onClick.AddListener(delegate () { setLab("Exit"); });
-
-        // Set Lab Title, description, name, and visibility
-        exitLab.transform.GetChild(0).GetComponent<Text>().text = "Exit";
-        exitLab.transform.GetChild(1).GetComponent<Text>().text = "Closes program and sends data back to server";
-        exitLab.name = "Exit tab";
-        exitLab.SetActive(true);
-
-        // Keep track of Labs to destroy them later if needed 
-        labList.Add(exitLab);
+        // Create one last button that allows user to exit application
+        labList.Add(createLab("Exit", "Closes program and sends data back to server", count++));
     }
 
+    // Used by SetLabs() to instantiate variants of lab buttons to select lab
+    private GameObject createLab(string lab, string description, int count)
+    {
+        // Create instance and position it
+        GameObject newlab = Instantiate(labTemp, this.labs.transform);
+        newlab.transform.position += .42f * (count % 2) * anchor.transform.right + new Vector3(0, -.15f * (count / 2), 0);
+
+        // Give each lab a unique value onClick
+        newlab.GetComponent<Button>().onClick.AddListener(delegate () { setLab(lab); });
+
+        // Set Lab Title, description, name, and visibility
+        newlab.transform.GetChild(0).GetComponent<Text>().text = format(lab); //format doesn't work here but it really doesn't matter
+        newlab.transform.GetChild(1).GetComponent<Text>().text = description;
+        newlab.name = lab.Equals("Exit") ? lab : "Lab: " + lab;
+        newlab.SetActive(true);
+        return newlab;
+    }
 
     // Removes underscores and replaces them with spaces
     private string format(string lab)
@@ -362,6 +358,7 @@ public class loginLogic : MonoBehaviour
         // If exit is selected from the list, End program here
         if (labSelected.ToUpper().Equals("EXIT")) 
         {
+            print("Exit tab selected; Exiting application");
         #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
         #else
@@ -369,13 +366,16 @@ public class loginLogic : MonoBehaviour
         #endif
         } 
 
+        // If no lab has been selected (forced next()), returns to lab selection
         else if (labSelected.Equals("none")) 
-        { 
+        {
+            print("No lab selected; returning to lab selection");
             gotoState((int)state.lab_selection); 
         }
 
         else
         {
+            print("Lab selected: " + format(labSelected) + ", but no info to load for now :^)\n");
             var manifestPath = "http://cyberlearnar.cs.mtsu.edu/lab_manifest/" + labSelected;
             var jsonPath = labOptions[labSelected];
             // GameObject.Find("LabManager").GetComponent<LabManagerScript>().startLab(manifestPath,jsonPath);
