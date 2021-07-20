@@ -49,6 +49,7 @@ public class loginLogic : MonoBehaviour
         labList = new List<GameObject>();
         StartCoroutine(DownloadFile("http://cyberlearnar.cs.mtsu.edu/show_uploaded/test_names.csv","Assets/Login Scene/csv bank/test_names.csv"));
         StartCoroutine(DownloadFile("http://cyberlearnar.cs.mtsu.edu/show_uploaded/crn_to_labs.csv","Assets/Login Scene/csv bank/crn_to_labs.csv"));
+        intro.SetActive(true);
         toggleLineRender(false);
     }
 
@@ -57,14 +58,13 @@ public class loginLogic : MonoBehaviour
     void Update()
     {
         // After Start, sets intro position 
-        if (setAnimationAnchor && Camera.main.transform.position != new Vector3(0, 0, 0)) // This took longer than it should've to come up with
+        /*if (setAnimationAnchor && Camera.main.transform.position != new Vector3(0, 0, 0)) // This took longer than it should've to come up with
         {
             intro.transform.position = Camera.main.transform.position + Camera.main.transform.rotation * new Vector3(0, 0, 5); 
-            intro.transform.rotation = Camera.main.transform.rotation;
-            intro.SetActive(true);
+            intro.transform.eulerAngles = Camera.main.transform.eulerAngles;
             setAnimationAnchor = false;
             toggleLineRender(false);
-        }
+        }*/
 
         // After initial animation, this will initiate placement scene, then the login screen 
         // intro.active throws warning, but don't trust the stinky computer
@@ -76,11 +76,15 @@ public class loginLogic : MonoBehaviour
             // starts the rest of events in motion
             print("Animation at idle; starting placement scene. :)\n");
             next();
+        } else
+        {
+            intro.transform.position = Camera.main.transform.position + Camera.main.transform.rotation * new Vector3(0, 0, 5);
+            intro.transform.eulerAngles = Camera.main.transform.eulerAngles;
         }
 
         if (placement_prop.active && !placed)
         {
-            // Same as realign()
+            // Same as realign() - BEFORE REWORK
             anchor.transform.position = controller.transform.position;
             anchor.transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, 0);
         } 
@@ -89,10 +93,11 @@ public class loginLogic : MonoBehaviour
 
     #region Public Events
     // OnHomeButtonDown() realigns UI to position of controller and angle head is pointing
-    public void realign() 
+    public void realign()  // TODO I WANT TO FIX THIS RUNNING OUT OF TIME THO :(
     {
         print("Realigning UI.");
         anchor.transform.position = controller.transform.position;
+        // anchor.transform.position = Camera.main.transform.forward * .2; anchor.transform.position.y = controller.transform.position.y; 
         anchor.transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, 0);
         // Alternative to align closer to the body 
         // anchor.transform.position = new Vector3((controller.transform.position.x + Camera.main.transform.position.x)/2, controller.transform.position.y,(controller.transform.position.x + Camera.main.transform.position.x)/2);
