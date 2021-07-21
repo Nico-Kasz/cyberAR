@@ -16,7 +16,7 @@ public class loginLogic : MonoBehaviour
     public GameObject anchor; 
     public GameObject placement_prop;
     public GameObject controller;
-    public GameObject labs;
+    public GameObject lab_options;
     public GameObject guestButton;
     public GameObject labTemp;
     #endregion
@@ -57,16 +57,14 @@ public class loginLogic : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // After Start, sets intro position 
-        /*if (setAnimationAnchor && Camera.main.transform.position != new Vector3(0, 0, 0)) // This took longer than it should've to come up with
+        // After Start, sets intro position - such that it exists in worldspace and isn't bound to head movemnet
+        if (setAnimationAnchor && Camera.main.transform.position != new Vector3(0, 0, 0)) // This took longer than it should've to come up with
         {
             intro.transform.position = Camera.main.transform.position + Camera.main.transform.rotation * new Vector3(0, 0, 5); 
-            intro.transform.eulerAngles = Camera.main.transform.eulerAngles;
+            intro.transform.eulerAngles = new Vector3(0,Camera.main.transform.eulerAngles.y,0);
             setAnimationAnchor = false;
             toggleLineRender(false);
-        }*/
-        // Alternative that locks the animation to come at the user
-        intro.transform.position = Camera.main.transform.forward * 5;
+        }
 
         // After initial animation, this will initiate placement scene, then the login screen 
         // intro.active throws warning, but don't trust the stinky computer
@@ -78,15 +76,12 @@ public class loginLogic : MonoBehaviour
             // starts the rest of events in motion
             print("Animation at idle; starting placement scene. :)\n");
             next();
-        } else
-        {
-            intro.transform.position = Camera.main.transform.position + Camera.main.transform.rotation * new Vector3(0, 0, 5);
-            intro.transform.eulerAngles = Camera.main.transform.eulerAngles;
         }
 
+        // place the scene object to set the coordinant system
         if (placement_prop.active && !placed)
         {
-            // Same as realign() - BEFORE REWORK
+            // Same as realign() - CONSIDERING REWORK
             anchor.transform.position = controller.transform.position;
             anchor.transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, 0);
         } 
@@ -98,12 +93,9 @@ public class loginLogic : MonoBehaviour
     public void realign()  // TODO I WANT TO FIX THIS RUNNING OUT OF TIME THO :(
     {
         print("Realigning UI.");
-        // anchor.transform.position = controller.transform.position;
-        float distance = Mathf.Abs(Vector2.Distance(new Vector2(Camera.main.transform.position.x, Camera.main.transform.position.z), new Vector2(controller.transform.position.x, controller.transform.position.z)));
-        anchor.transform.position = new Vector3(Camera.main.transform.position.x + distance * Mathf.Cos(Camera.main.transform.eulerAngles.y),
-                                                controller.transform.position.y,
-                                                Camera.main.transform.position.z + distance * Mathf.Sin(Camera.main.transform.eulerAngles.y));
+        anchor.transform.position = controller.transform.position;
         anchor.transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, 0);
+
         // Alternative to align closer to the body - UNTESTED
         // anchor.transform.position = new Vector3((controller.transform.position.x + Camera.main.transform.position.x)/2, controller.transform.position.y,(controller.transform.position.x + Camera.main.transform.position.x)/2);
 
@@ -193,7 +185,7 @@ public class loginLogic : MonoBehaviour
                     keyboard.SetActive(false);
 
                     // Load Modules 
-                    labs.SetActive(true);
+                    lab_options.SetActive(true);
                     setLabs();
                     break;
                 }
@@ -201,7 +193,7 @@ public class loginLogic : MonoBehaviour
             case (int)state.lab_initiation: // Insantiate lab: 5
                 {
                     // Disable all UI
-                    labs.SetActive(false);
+                    lab_options.SetActive(false);
 
                     // Start Lab Manager
                     startLab();
@@ -213,7 +205,7 @@ public class loginLogic : MonoBehaviour
             default:
                 {
                     // Disable lab selection
-                    labs.SetActive(false);
+                    lab_options.SetActive(false);
                     print(labSelected);
 
                     // Loop back to Start
@@ -240,6 +232,7 @@ public class loginLogic : MonoBehaviour
     // Called to automatically log in as "guest"
     public void guestLogin()
     {
+        print("Guest button hit; logging in as Guest user.");
         // Fill in usr/pas perameters so no errors will be thrown 
         // Also disables placeholders so it doesn't look ugly if user didn't type in user or pas perameters and has to retern to start
         usr.transform.GetChild(0).GetComponent<Text>().text = "guest";
@@ -318,7 +311,7 @@ public class loginLogic : MonoBehaviour
     private GameObject createLab(string lab, string description, int count)
     {
         // Create instance and position it
-        GameObject newlab = Instantiate(labTemp, this.labs.transform);
+        GameObject newlab = Instantiate(labTemp, lab_options.transform);
         newlab.transform.position += .42f * (count % 2) * anchor.transform.right + new Vector3(0, -.15f * (count / 2), 0);
 
         // Give each lab a unique value onClick

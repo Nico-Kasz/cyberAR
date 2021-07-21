@@ -14,7 +14,6 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
-  m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.01
@@ -155,19 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   OnTargetEnter:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1454508151}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   OnTargetExit:
     m_PersistentCalls:
       m_Calls: []
@@ -273,7 +260,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 104246441}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 5}
+  m_LocalPosition: {x: 0, y: 0, z: 3.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1283812653}
@@ -2433,7 +2420,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28d701e6a5c0e604896fe87be0acdca6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 851215325}
   LoginUI: {fileID: 2090734661}
   usr: {fileID: 1141388811}
   pas: {fileID: 405811793}
@@ -2443,7 +2429,7 @@ MonoBehaviour:
   anchor: {fileID: 149315593}
   placement_prop: {fileID: 254351805}
   controller: {fileID: 474883755}
-  labs: {fileID: 1283812652}
+  lab_options: {fileID: 1283812652}
   guestButton: {fileID: 434943772}
   labTemp: {fileID: 1861776993}
 --- !u!1 &716852239
@@ -4438,7 +4424,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1832781078}
   - component: {fileID: 1832781077}
-  - component: {fileID: 1832781076}
   - component: {fileID: 1832781075}
   m_Layer: 0
   m_Name: Login EventSystem
@@ -4459,32 +4444,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12c0ffe7b5b6b484cae96ea8ed89bc3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mainCanvas: {fileID: 7547068025724673412}
+  _mainCanvas: {fileID: 2090734662}
   _pointerInput: 2
   _buttonClick: 0
   _scrollSpeed: 5
   _triggerClickSpeed: 3
   _triggerDownThreshold: 0.25
   _dragThreshold: 0.025
---- !u!114 &1832781076
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1832781074}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
 --- !u!114 &1832781077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7044,12 +7010,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2144842104}
   m_CullTransparentMesh: 0
---- !u!223 &7547068025724673412 stripped
-Canvas:
-  m_CorrespondingSourceObject: {fileID: 223852970294542848, guid: 6332cefa0c3c02049842fbed64b35e5b,
-    type: 3}
-  m_PrefabInstance: {fileID: 1914319866}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7651691395722804734 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 114735952801161850, guid: 6332cefa0c3c02049842fbed64b35e5b,

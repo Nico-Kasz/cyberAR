@@ -9,7 +9,7 @@ public class autofill : MonoBehaviour
 {
     #region Public Variables 
     [Tooltip("This is how many characters are typed until a new list of names is requested.")]
-    public int len = 3;
+    public int lengthQueue = 3;
     public int optionLimit = 5;
     #endregion 
 
@@ -55,7 +55,7 @@ public class autofill : MonoBehaviour
     void Update()
     {
         // Only way to consistantly update and make it visible 
-        if (input.text.Length >= len && showing > 0) { dropdown.Show(); }
+        if (input.text.Length >= lengthQueue && showing > 0) { dropdown.Show(); }
         else { dropdown.Hide(); }
 
         // On change of text 
@@ -105,7 +105,7 @@ public class autofill : MonoBehaviour
         dropdown.Hide(); 
 
 
-        if (input.text.Length >= len)
+        if (input.text.Length >= lengthQueue)
         {
             // Empty list before adding elemnts
             dropdown.options.Clear();   
@@ -158,10 +158,11 @@ public class autofill : MonoBehaviour
         var result = new Dictionary<string, Dictionary<string, string>>();
 
         // Set path for where to pull data from
-        string crnPath = "Assets/Login Scene/csv bank/crn_to_labs.csv";
         string namesPath = "Assets/Login Scene/csv bank/test_names.csv";
+        string crnPath = "Assets/Login Scene/csv bank/crn_to_labs.csv";
 
-        string[] lines = System.IO.File.ReadAllLines(namesPath);
+        // Get String array of the lines and read them off
+        string[] lines = System.IO.File.ReadAllLines(namesPath);      
 
         // 0: username, 1: Name, 2: CRN, 3: Instructor, 4: Password
         for (int i = 1; i < lines.Length; i++)  // Skips labeling row
@@ -174,7 +175,8 @@ public class autofill : MonoBehaviour
             users.Add(new User(columns[0], columns[4], columns[2]));
         }
 
-        lines = System.IO.File.ReadAllLines(crnPath);
+        // Load in CRN - Lab/JsonUrl dictionary
+        lines = System.IO.File.ReadAllLines(crnPath);            
 
         // 0: CRN, Odd: Lab Name, Even: JsonUrl associated with lab
         for (int i = 1; i < lines.Length; i++)  // Skips labeling row
