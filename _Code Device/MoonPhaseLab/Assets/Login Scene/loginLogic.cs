@@ -65,6 +65,8 @@ public class loginLogic : MonoBehaviour
             setAnimationAnchor = false;
             toggleLineRender(false);
         }*/
+        // Alternative that locks the animation to come at the user
+        intro.transform.position = Camera.main.transform.forward * 5;
 
         // After initial animation, this will initiate placement scene, then the login screen 
         // intro.active throws warning, but don't trust the stinky computer
@@ -96,10 +98,13 @@ public class loginLogic : MonoBehaviour
     public void realign()  // TODO I WANT TO FIX THIS RUNNING OUT OF TIME THO :(
     {
         print("Realigning UI.");
-        anchor.transform.position = controller.transform.position;
-        // anchor.transform.position = Camera.main.transform.forward * .2; anchor.transform.position.y = controller.transform.position.y; 
+        // anchor.transform.position = controller.transform.position;
+        float distance = Mathf.Abs(Vector2.Distance(new Vector2(Camera.main.transform.position.x, Camera.main.transform.position.z), new Vector2(controller.transform.position.x, controller.transform.position.z)));
+        anchor.transform.position = new Vector3(Camera.main.transform.position.x + distance * Mathf.Cos(Camera.main.transform.eulerAngles.y),
+                                                controller.transform.position.y,
+                                                Camera.main.transform.position.z + distance * Mathf.Sin(Camera.main.transform.eulerAngles.y));
         anchor.transform.eulerAngles = new Vector3(0, Camera.main.transform.eulerAngles.y, 0);
-        // Alternative to align closer to the body 
+        // Alternative to align closer to the body - UNTESTED
         // anchor.transform.position = new Vector3((controller.transform.position.x + Camera.main.transform.position.x)/2, controller.transform.position.y,(controller.transform.position.x + Camera.main.transform.position.x)/2);
 
         // change orientation of starfield
